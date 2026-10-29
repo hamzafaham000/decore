@@ -32,6 +32,23 @@ Prefer Docker? `docker compose up -d` publishes the same database on `localhost:
 migrations again. Change `docker-compose.yml` and `DATABASE_URL` together if you move
 it. Either way the credentials are `decore` / `decore`.
 
+## Deploy
+
+`src/generated/prisma` is gitignored and produced by `postinstall` (`prisma generate`). Any
+host that runs a normal `pnpm install` gets it for free — but a build that skips install
+scripts will fail on `Can't resolve '@/generated/prisma/client'`.
+
+Set these in the host's environment:
+
+| Variable | Needed for |
+| --- | --- |
+| `DATABASE_URL` | orders and receipts, at runtime only |
+| `SITE_URL` | canonicals, sitemap, structured data — must be the real public origin |
+| `WHATSAPP_NUMBER` | the order hand-off |
+
+The build compiles without any of them. Point `DATABASE_URL` at the production database and
+run `pnpm prisma migrate deploy` once before the first real order.
+
 ## Things to replace before launch
 
 | What | Where |
