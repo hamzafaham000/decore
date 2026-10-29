@@ -1,0 +1,97 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+
+import { ArrowUpRightIcon, ChatIcon } from "@/components/icons";
+import { JsonLd } from "@/components/json-ld";
+import { CollectionBrowser } from "@/components/collection-browser";
+import { Reveal } from "@/components/reveal";
+import { brand } from "@/lib/brand";
+import { products } from "@/lib/products";
+import { collectionJsonLd, siteOgImage } from "@/lib/seo";
+import { whatsappLink } from "@/lib/whatsapp";
+
+export const metadata: Metadata = {
+  title: { absolute: `Collection — Furniture made to order in Pakistan | ${brand.name}` },
+  description: `${products.length} pieces for the office and the home — seating, desks, lighting and objects. Made to order in four to eight weeks and delivered across Pakistan.`,
+  alternates: { canonical: "/collection" },
+  openGraph: {
+    type: "website",
+    url: "/collection",
+    title: `The collection — made to order in Pakistan | ${brand.name}`,
+    description: `${products.length} pieces for the office and the home, made to order in four to eight weeks and delivered across Pakistan.`,
+    images: [siteOgImage],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `The collection — made to order in Pakistan | ${brand.name}`,
+    description: `${products.length} pieces for the office and the home, delivered across Pakistan.`,
+  },
+};
+
+export default function CollectionPage() {
+  return (
+    <div className="pb-4">
+      <JsonLd data={collectionJsonLd(products)} />
+      <header className="page-shell pb-12 pt-10 md:pb-16 md:pt-16">
+        <div className="grid items-end gap-10 border-b border-line pb-12 lg:grid-cols-12 lg:gap-12">
+          <div className="lg:col-span-8">
+            <Reveal>
+              <p className="eyebrow flex items-center gap-3 text-muted">
+                <span className="h-px w-8 bg-muted/50" />
+                Office &amp; home
+              </p>
+              <h1 className="display-1 mt-7">The collection</h1>
+            </Reveal>
+          </div>
+
+          <Reveal delay={0.08} className="lg:col-span-4">
+            <p className="max-w-[42ch] leading-relaxed text-muted">
+              A short list, built to order by workshops we visit in person.
+            </p>
+          </Reveal>
+        </div>
+
+        <Reveal delay={0.12}>
+          <dl className="mt-6 flex flex-wrap gap-x-10 gap-y-3 text-xs text-muted">
+            <div className="flex items-baseline gap-2">
+              <dt className="eyebrow text-muted">Lead time</dt>
+              <dd className="text-ink">4–8 weeks</dd>
+            </div>
+          </dl>
+        </Reveal>
+      </header>
+
+      <div className="page-shell">
+        <CollectionBrowser products={products} />
+      </div>
+
+      <section className="page-shell mt-24">
+        <Reveal>
+          <div className="grid items-center gap-8 rounded-2xl bg-surface px-7 py-10 md:grid-cols-12 md:px-12 md:py-14">
+            <div className="md:col-span-8">
+              <p className="eyebrow text-muted">Can&apos;t decide?</p>
+              <h2 className="display-3 mt-4 max-w-[22ch]">
+                Tell us about the room and we will narrow it down.
+              </h2>
+            </div>
+            <div className="flex flex-wrap gap-3 md:col-span-4 md:justify-end">
+              <a
+                href={whatsappLink("Hello — I would like help choosing a piece.")}
+                target="_blank"
+                rel="noreferrer"
+                className="btn-primary"
+              >
+                <ChatIcon className="h-4 w-4" />
+                WhatsApp
+              </a>
+              <Link href="/contact" className="btn-outline">
+                Enquire
+                <ArrowUpRightIcon className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+        </Reveal>
+      </section>
+    </div>
+  );
+}

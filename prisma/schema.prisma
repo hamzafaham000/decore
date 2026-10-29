@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum CheckoutMethod {
+  CARD
+  WHATSAPP
+  COD
+}
+
+enum OrderStatus {
+  AWAITING_CONFIRMATION
+  CONFIRMED
+  PAID
+  DISPATCHED
+  CANCELLED
+}
+
+model Order {
+  id        String      @id @default(cuid())
+  reference String      @unique
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  status    OrderStatus @default(AWAITING_CONFIRMATION)
+
+  method CheckoutMethod
+
+  customerName   String
+  phone          String
+  email          String?
+  addressLine1   String
+  addressLine2   String?
+  city           String
+  notes          String?
+  cancellationOk Boolean   @default(false)
+
+  // Whole Pakistani Rupees. No subunit is used anywhere in the catalogue.
+  subtotal    Int
+  deliveryFee Int
+  total       Int
+  advanceDue  Int
+  balanceDue  Int
+  advancePaid Boolean @default(false)
+
+  items OrderItem[]
+
+  @@index([createdAt])
+  @@index([phone])
+}
+
+model OrderItem {
+  id          String @id @default(cuid())
+  order       Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId     String
+  productSlug String
+  name        String
+  unitPrice   Int
+  quantity    Int
+  finish      String?
+
+  @@index([orderId])
+}
