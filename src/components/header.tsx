@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 
-import { ArrowUpRightIcon, BagIcon, ChatIcon, CloseIcon, GridIcon, MailIcon, MenuIcon } from "@/components/icons";
+import { ArrowRightIcon, BagIcon, ChatIcon, CloseIcon, GridIcon, MailIcon, MenuIcon } from "@/components/icons";
 import { SearchDialog } from "@/components/search-dialog";
 import { announcement, brand, nav } from "@/lib/brand";
 import { cartCount, useCartStore } from "@/lib/cart-store";
@@ -204,10 +204,11 @@ export function Header({
           aria-label="Site menu"
           className="animate-menu-in fixed inset-0 z-50 flex flex-col overflow-y-auto bg-canvas md:hidden"
         >
-          <div className="page-shell flex h-[4.5rem] items-center justify-between border-b border-line">
+          <div className="page-shell flex h-[4.5rem] shrink-0 items-center justify-between border-b border-line">
             <Link
               href="/"
               onClick={() => setMenuOpen(false)}
+              aria-label={`${brand.name} home`}
               className="flex items-center gap-2.5"
             >
               <span aria-hidden className="h-2 w-2 rounded-full bg-pine" />
@@ -225,43 +226,63 @@ export function Header({
             </button>
           </div>
 
-          <nav aria-label="Mobile" className="page-shell mt-10 flex-1">
-            <ul>
-              {nav.map((item) => (
-                <li key={item.label}>
-                  <Link
-                    href={item.href}
-                    onClick={() => setMenuOpen(false)}
-                    className="group flex items-center justify-between border-b border-line py-6"
-                  >
-                    <span className="display-3">{item.label}</span>
-                    <ArrowUpRightIcon className="h-5 w-5 text-muted transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                  </Link>
-                </li>
-              ))}
-              <li>
+          <div className="page-shell flex min-h-0 flex-1 flex-col overflow-y-auto pb-[max(1.75rem,env(safe-area-inset-bottom))]">
+            <nav aria-label="Mobile" className="pt-8">
+              <p className="eyebrow text-muted">Browse</p>
+              <ul className="mt-4 border-t border-line">
+                {nav.map((item, index) => {
+                  const Icon = navIcons[item.href as keyof typeof navIcons] ?? ArrowRightIcon;
+
+                  return (
+                    <li
+                      key={item.label}
+                      className="animate-menu-in border-b border-line"
+                      style={{ animationDelay: `${60 + index * 45}ms` }}
+                    >
+                      <Link
+                        href={item.href}
+                        onClick={() => setMenuOpen(false)}
+                        className="group flex items-center gap-4 py-4"
+                      >
+                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-line bg-surface text-pine transition-colors group-hover:border-pine/30 group-hover:bg-pine-soft">
+                          <Icon className="h-[1.05rem] w-[1.05rem]" />
+                        </span>
+                        <span className="flex-1 text-[1.0625rem] font-medium tracking-[-0.005em]">
+                          {item.label}
+                        </span>
+                        <ArrowRightIcon className="h-4 w-4 text-muted/60 transition-transform duration-200 group-hover:translate-x-0.5" />
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </nav>
+
+            <div className="mt-auto pt-10">
+              <div className="rounded-xl bg-pine-soft/70 p-5">
+                <p className="text-[0.9375rem] font-medium">Questions before you order?</p>
+                <p className="mt-1.5 text-[0.8125rem] leading-relaxed text-muted">
+                  Every piece is built to order. Ask us about timing, finish or fabric.
+                </p>
                 <a
                   href={whatsappUrl}
                   target="_blank"
                   rel="noreferrer"
                   onClick={() => setMenuOpen(false)}
-                  className="group flex items-baseline justify-between border-b border-line py-6"
+                  className="btn-primary mt-4 w-full"
                 >
-                  <span className="display-3">WhatsApp</span>
-                  <ChatIcon className="h-5 w-5 text-muted" />
+                  <ChatIcon className="h-4 w-4" />
+                  Message on WhatsApp
                 </a>
-              </li>
-            </ul>
-          </nav>
-
-          <div className="page-shell mt-12 space-y-4 pb-12">
-            <a
-              href={`mailto:${brand.email}`}
-              className="flex items-center gap-3 text-sm text-muted"
-            >
-              <MailIcon className="h-4 w-4" />
-              {brand.email}
-            </a>
+                <a
+                  href={`mailto:${brand.email}`}
+                  className="mt-3 flex items-center justify-center gap-2 text-[0.8125rem] text-muted transition-colors hover:text-ink"
+                >
+                  <MailIcon className="h-3.5 w-3.5" />
+                  {brand.email}
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       )}
