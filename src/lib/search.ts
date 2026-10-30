@@ -1,4 +1,4 @@
-import type { Product } from "@/lib/products";
+import type { Product } from "@/lib/catalog-types";
 
 /**
  * A compact, serializable slice of a product. The header receives this from the

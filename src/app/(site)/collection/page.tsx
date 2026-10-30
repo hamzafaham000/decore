@@ -6,29 +6,36 @@ import { JsonLd } from "@/components/json-ld";
 import { CollectionBrowser } from "@/components/collection-browser";
 import { Reveal } from "@/components/reveal";
 import { brand } from "@/lib/brand";
-import { products } from "@/lib/products";
+import { getCategories, getProducts } from "@/lib/catalog";
 import { collectionJsonLd, siteOgImage } from "@/lib/seo";
 import { whatsappLink } from "@/lib/whatsapp";
 
-export const metadata: Metadata = {
-  title: { absolute: `Shop — furniture and decor made to order in Pakistan | ${brand.name}` },
-  description: `${products.length} pieces for the office and the home — seating, tables, lighting and decor. Made to order in four to eight weeks and delivered across Pakistan.`,
-  alternates: { canonical: "/collection" },
-  openGraph: {
-    type: "website",
-    url: "/collection",
-    title: `Shop — made to order in Pakistan | ${brand.name}`,
-    description: `${products.length} pieces for the office and the home, made to order in four to eight weeks and delivered across Pakistan.`,
-    images: [siteOgImage],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: `Shop — made to order in Pakistan | ${brand.name}`,
-    description: `${products.length} pieces for the office and the home, delivered across Pakistan.`,
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const count = (await getProducts()).length;
+  const description = `${count} pieces for the office and the home, made to order in four to eight weeks and delivered across Pakistan.`;
 
-export default function CollectionPage() {
+  return {
+    title: { absolute: `Shop — furniture and decor made to order in Pakistan | ${brand.name}` },
+    description: `${count} pieces for the office and the home — seating, tables, lighting and decor. Made to order in four to eight weeks and delivered across Pakistan.`,
+    alternates: { canonical: "/collection" },
+    openGraph: {
+      type: "website",
+      url: "/collection",
+      title: `Shop — made to order in Pakistan | ${brand.name}`,
+      description,
+      images: [siteOgImage],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `Shop — made to order in Pakistan | ${brand.name}`,
+      description,
+    },
+  };
+}
+
+export default async function CollectionPage() {
+  const [products, categories] = await Promise.all([getProducts(), getCategories()]);
+
   return (
     <div className="pb-4">
       <JsonLd data={collectionJsonLd(products, { name: "The Decore shop" })} />
@@ -49,7 +56,7 @@ export default function CollectionPage() {
       </header>
 
       <div className="page-shell">
-        <CollectionBrowser products={products} />
+        <CollectionBrowser products={products} categories={categories} />
       </div>
 
       <section className="page-shell mt-24">

@@ -7,8 +7,7 @@ import { useMemo, useState } from "react";
 import { ChevronDownIcon } from "@/components/icons";
 import { ProductCard } from "@/components/product-card";
 import { easeOutExpo } from "@/lib/motion";
-import type { CategorySlug, Product, Surface } from "@/lib/products";
-import { categories } from "@/lib/products";
+import type { Category, Product, Surface } from "@/lib/catalog-types";
 
 type SurfaceFilter = "all" | Surface;
 type PriceBand = "any" | "under" | "mid" | "over";
@@ -35,11 +34,13 @@ function inBand(price: number, band: PriceBand) {
 
 export function CollectionBrowser({
   products,
+  categories,
   active,
 }: {
   products: Product[];
+  categories: Category[];
   /** The category this page represents. Omit on the all-pieces page. */
-  active?: CategorySlug;
+  active?: string;
 }) {
   const [surface, setSurface] = useState<SurfaceFilter>("all");
   const [band, setBand] = useState<PriceBand>("any");

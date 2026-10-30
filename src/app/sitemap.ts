@@ -1,7 +1,8 @@
 import type { MetadataRoute } from "next";
 
 import { absoluteUrl } from "@/lib/site";
-import { categories, products, productImages } from "@/lib/products";
+import { getCategories, getProducts } from "@/lib/catalog";
+import { productImages } from "@/lib/catalog-types";
 
 /**
  * `lastModified` is left out on purpose: the catalogue is code with no per-piece
@@ -10,7 +11,8 @@ import { categories, products, productImages } from "@/lib/products";
  * Product images are listed so Google Images and answer engines can associate the
  * photograph with the piece, not just the page.
  */
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const [categories, products] = await Promise.all([getCategories(), getProducts()]);
   const pages: MetadataRoute.Sitemap = [
     { url: absoluteUrl("/"), changeFrequency: "monthly", priority: 1 },
     { url: absoluteUrl("/collection"), changeFrequency: "monthly", priority: 0.9 },

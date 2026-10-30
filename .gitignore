@@ -45,3 +45,6 @@ next-env.d.ts
 /.claude/
 /.windsurf/
 /skills-lock.json
+
+# Admin image uploads, served through /api/uploads.
+/data/uploads/

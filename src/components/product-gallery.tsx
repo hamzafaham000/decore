@@ -4,8 +4,8 @@ import { useRef, useState } from "react";
 
 import { ProductImage } from "@/components/product-image";
 import type { PlaceholderView } from "@/components/product-image";
-import type { Product } from "@/lib/products";
-import { productImages } from "@/lib/products";
+import type { Product } from "@/lib/catalog-types";
+import { productImages } from "@/lib/catalog-types";
 
 type GalleryView = {
   /** The photograph, when this angle has been shot. */

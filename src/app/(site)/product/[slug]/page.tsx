@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
 
 import { Accordion } from "@/components/accordion";
 import { AddToCart } from "@/components/add-to-cart";
@@ -11,19 +10,22 @@ import { ProductCard } from "@/components/product-card";
 import { ProductGallery } from "@/components/product-gallery";
 import { brand, commerce } from "@/lib/brand";
 import { formatPKR } from "@/lib/money";
-import { getProduct, products } from "@/lib/products";
-import type { Surface } from "@/lib/products";
+import { getProduct, getProducts } from "@/lib/catalog";
+import type { Surface } from "@/lib/catalog-types";
 import { productJsonLd, categoryOf } from "@/lib/seo";
 import { whatsappLink } from "@/lib/whatsapp";
 
-export function generateStaticParams() {
+export const instant = false;
+
+export async function generateStaticParams() {
+  const products = await getProducts();
   return products.map((product) => ({ slug: product.slug }));
 }
 
 export async function generateMetadata({
   params,
 }: PageProps<"/product/[slug]">): Promise<Metadata> {
-  const product = getProduct((await params).slug);
+  const product = await getProduct((await params).slug);
   if (!product) return { title: "Piece not found", robots: { index: false, follow: false } };
 
   const path = `/product/${product.slug}`;
@@ -68,24 +70,11 @@ function SpecList({ rows }: { rows: { label: string; value: string }[] }) {
   );
 }
 
-function DetailSkeleton() {
-  return (
-    <div className="page-shell grid gap-x-14 gap-y-12 py-8 lg:grid-cols-2 lg:py-12">
-      <div className="aspect-4/5 animate-pulse rounded-2xl bg-line/40" />
-      <div className="space-y-6 lg:py-4">
-        <div className="h-3 w-24 animate-pulse rounded-full bg-line/40" />
-        <div className="h-12 w-2/3 animate-pulse rounded-full bg-line/40" />
-        <div className="h-4 w-1/2 animate-pulse rounded-full bg-line/40" />
-        <div className="h-32 w-full animate-pulse rounded-2xl bg-line/40" />
-      </div>
-    </div>
-  );
-}
-
-async function ProductDetail({ params }: { params: Promise<{ slug: string }> }) {
-  const product = getProduct((await params).slug);
+export default async function ProductPage({ params }: PageProps<"/product/[slug]">) {
+  const product = await getProduct((await params).slug);
   if (!product) notFound();
 
+  const products = await getProducts();
   const index = products.findIndex((candidate) => candidate.slug === product.slug);
   const neighbours = [...products.slice(index + 1), ...products.slice(0, index)];
   const others = neighbours.slice(0, 3);
@@ -237,13 +226,5 @@ async function ProductDetail({ params }: { params: Promise<{ slug: string }> }) 
         </div>
       </section>
     </>
-  );
-}
-
-export default function ProductPage({ params }: PageProps<"/product/[slug]">) {
-  return (
-    <Suspense fallback={<DetailSkeleton />}>
-      <ProductDetail params={params} />
-    </Suspense>
   );
 }

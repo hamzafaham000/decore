@@ -1,15 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Instrument_Sans, Instrument_Serif } from "next/font/google";
 
-import { CartDrawer } from "@/components/cart-drawer";
-import { Footer } from "@/components/footer";
-import { Header } from "@/components/header";
-import { JsonLd } from "@/components/json-ld";
 import { brand } from "@/lib/brand";
-import { searchIndex } from "@/lib/search-index";
-import { siteJsonLd } from "@/lib/seo";
 import { siteLanguage, siteLocale, siteUrl } from "@/lib/site";
-import { whatsappLink } from "@/lib/whatsapp";
 
 import "./globals.css";
 
@@ -75,25 +68,9 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
-  const enquiryUrl = whatsappLink(`Hello — I would like to ask about a ${brand.name} piece.`);
-
   return (
     <html lang={siteLanguage} className={`${sans.variable} ${serif.variable} h-full`}>
-      <body className="flex min-h-full flex-col">
-        <JsonLd data={siteJsonLd()} />
-        <a
-          href="#content"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-ink focus:px-5 focus:py-3 focus:text-sm focus:text-canvas"
-        >
-          Skip to content
-        </a>
-        <Header whatsappUrl={enquiryUrl} searchIndex={searchIndex} />
-        <main id="content" className="flex-1">
-          {children}
-        </main>
-        <Footer />
-        <CartDrawer />
-      </body>
+      <body className="flex min-h-full flex-col">{children}</body>
     </html>
   );
 }

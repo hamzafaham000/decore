@@ -1,6 +1,7 @@
 import { brand, commerce } from "@/lib/brand";
 import { formatPKR } from "@/lib/money";
-import { categories, products } from "@/lib/products";
+import { getCategories, getProducts } from "@/lib/catalog";
+import type { Product } from "@/lib/catalog-types";
 import { madeToOrderFaqs } from "@/lib/seo";
 import { absoluteUrl } from "@/lib/site";
 
@@ -12,10 +13,7 @@ import { absoluteUrl } from "@/lib/site";
  */
 const generated = new Date().toISOString().slice(0, 10);
 
-function productDetail(slug: string): string {
-  const product = products.find((candidate) => candidate.slug === slug);
-  if (!product) return "";
-
+function productDetail(product: Product): string {
   return [
     `### ${product.name}`,
     `URL: ${absoluteUrl(`/product/${product.slug}`)}`,
@@ -29,7 +27,9 @@ function productDetail(slug: string): string {
   ].join("\n");
 }
 
-export function llmsIndex(): string {
+export async function llmsIndex(): Promise<string> {
+  const [categories, products] = await Promise.all([getCategories(), getProducts()]);
+
   return [
     `# ${brand.name}`,
     "",
@@ -72,7 +72,9 @@ export function llmsIndex(): string {
   ].join("\n");
 }
 
-export function llmsFull(): string {
+export async function llmsFull(): Promise<string> {
+  const products = await getProducts();
+
   return [
     `# ${brand.name} — full catalogue`,
     "",
@@ -84,7 +86,7 @@ export function llmsFull(): string {
     "",
     "## Catalogue",
     "",
-    ...products.map((product) => productDetail(product.slug) + "\n"),
+    ...products.map((product) => productDetail(product) + "\n"),
     "## Process",
     "",
     "- Orders are confirmed by hand before a workshop starts.",

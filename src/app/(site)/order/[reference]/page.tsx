@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
 
 import { ArrowRightIcon, ChatIcon, CheckIcon, ClockIcon, TruckIcon } from "@/components/icons";
 import { MoneyRow } from "@/components/money-row";
 import { getCheckoutMethod } from "@/lib/checkout-methods";
 import { prisma } from "@/lib/db";
 import { formatPKR } from "@/lib/money";
-import { getProduct } from "@/lib/products";
+import { getProduct } from "@/lib/catalog";
 import { whatsappLink } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
@@ -44,9 +43,11 @@ async function Receipt({ reference }: { reference: string }) {
 
   // Order rows keep the slug, so the window is read back from the catalogue. A piece
   // that has since left the catalogue simply has no lead time to report.
-  const leadTimes = order.items.flatMap(
-    (item) => getProduct(item.productSlug)?.leadTimeWeeks ?? [],
-  );
+  const leadTimes = (
+    await Promise.all(
+      order.items.map(async (item) => (await getProduct(item.productSlug))?.leadTimeWeeks),
+    )
+  ).filter((weeks): weeks is number => typeof weeks === "number");
   const buildWeeks = leadTimes.length ? Math.max(...leadTimes) : null;
 
   const whatsappMessage = [
@@ -235,24 +236,14 @@ async function Receipt({ reference }: { reference: string }) {
   );
 }
 
-export default function OrderPage({ params }: PageProps<"/order/[reference]">) {
+export const instant = false;
+
+export default async function OrderPage({ params }: PageProps<"/order/[reference]">) {
+  const { reference } = await params;
+
   return (
     <div className="page-shell max-w-5xl pb-24 pt-6 md:pt-8">
-      <Suspense
-        fallback={
-          <div className="animate-pulse space-y-4">
-            <div className="h-64 rounded-2xl bg-line/40" />
-            <div className="h-40 rounded-2xl bg-line/40" />
-          </div>
-        }
-      >
-        <Resolved params={params} />
-      </Suspense>
+      <Receipt reference={reference} />
     </div>
   );
-}
-
-async function Resolved({ params }: { params: Promise<{ reference: string }> }) {
-  const { reference } = await params;
-  return <Receipt reference={reference} />;
 }

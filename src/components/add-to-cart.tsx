@@ -7,7 +7,7 @@ import { commerce } from "@/lib/brand";
 import { useCartStore } from "@/lib/cart-store";
 import { finishSwatch } from "@/lib/finishes";
 import { formatPKR } from "@/lib/money";
-import type { Product } from "@/lib/products";
+import type { Product } from "@/lib/catalog-types";
 
 export function AddToCart({ product }: { product: Product }) {
   const [finish, setFinish] = useState(product.finishes[0]);

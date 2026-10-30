@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 import { formatPKR } from "@/lib/money";
-import { getProduct } from "@/lib/products";
+import { getProduct } from "@/lib/catalog";
 
 export const alt = "A piece by Decore, made to order in Pakistan";
 export const size = { width: 1200, height: 630 };
@@ -12,7 +12,7 @@ export default async function OpengraphImage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const product = getProduct((await params).slug);
+  const product = await getProduct((await params).slug);
 
   return new ImageResponse(
     (

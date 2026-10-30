@@ -6,20 +6,23 @@ import { CollectionBrowser } from "@/components/collection-browser";
 import { JsonLd } from "@/components/json-ld";
 import { Reveal } from "@/components/reveal";
 import { brand } from "@/lib/brand";
-import { categories, getCategory, productsInCategory } from "@/lib/products";
+import { getCategories, getCategory, productsInCategory } from "@/lib/catalog";
 import { breadcrumbJsonLd, collectionJsonLd, siteOgImage } from "@/lib/seo";
 
-export function generateStaticParams() {
+export const instant = false;
+
+export async function generateStaticParams() {
+  const categories = await getCategories();
   return categories.map((category) => ({ category: category.slug }));
 }
 
 export async function generateMetadata({
   params,
 }: PageProps<"/collection/[category]">): Promise<Metadata> {
-  const category = getCategory((await params).category);
+  const category = await getCategory((await params).category);
   if (!category) return { title: "Shop", robots: { index: false, follow: false } };
 
-  const items = productsInCategory(category.slug);
+  const items = await productsInCategory(category.slug);
   const path = `/collection/${category.slug}`;
   const title = `${category.label} — made to order in Pakistan`;
   const description = `${category.blurb} ${items.length} ${
@@ -46,10 +49,13 @@ export async function generateMetadata({
 }
 
 export default async function CategoryPage({ params }: PageProps<"/collection/[category]">) {
-  const category = getCategory((await params).category);
+  const category = await getCategory((await params).category);
   if (!category) notFound();
 
-  const items = productsInCategory(category.slug);
+  const [items, categories] = await Promise.all([
+    productsInCategory(category.slug),
+    getCategories(),
+  ]);
   const path = `/collection/${category.slug}`;
   const description = `${category.blurb} ${items.length} built to order in Pakistan and delivered nationwide.`;
 
@@ -99,7 +105,7 @@ export default async function CategoryPage({ params }: PageProps<"/collection/[c
       </header>
 
       <div className="page-shell">
-        <CollectionBrowser products={items} active={category.slug} />
+        <CollectionBrowser products={items} categories={categories} active={category.slug} />
       </div>
 
     </div>

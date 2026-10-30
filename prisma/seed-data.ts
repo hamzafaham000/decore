@@ -1,3 +1,8 @@
+/**
+ * The catalogue as it existed before the database took over. This file is the
+ * seed source: run `pnpm db:seed` once, then edit products in /admin. It is not
+ * imported by the app.
+ */
 export type Surface = "home" | "office";
 
 /**
@@ -8,7 +13,7 @@ export type Surface = "home" | "office";
  *
  * Promote a line to a second level only when the catalogue passes ~40 pieces.
  */
-export const categories = [
+export const seedCategories = [
   {
     slug: "seating",
     label: "Seating",
@@ -31,8 +36,8 @@ export const categories = [
   },
 ] as const;
 
-export type CategorySlug = (typeof categories)[number]["slug"];
-export type CategoryLabel = (typeof categories)[number]["label"];
+export type CategorySlug = (typeof seedCategories)[number]["slug"];
+export type CategoryLabel = (typeof seedCategories)[number]["label"];
 
 export type Product = {
   slug: string;
@@ -59,7 +64,7 @@ export type Product = {
 
 // Sample catalogue. Replace names, prices and copy with the real pieces —
 // every page reads from this file, so nothing else needs to change.
-export const products: Product[] = [
+export const seedProducts: Product[] = [
   {
     slug: "meher-lounge-chair",
     name: "Meher Lounge Chair",
@@ -415,20 +420,3 @@ export const products: Product[] = [
   },
 ];
 
-export function getProduct(slug: string): Product | undefined {
-  return products.find((product) => product.slug === slug);
-}
-
-/** Every photograph for a piece, cover first. Empty when nothing is shot yet. */
-export function productImages(product: Pick<Product, "image" | "images">): string[] {
-  return [...(product.image ? [product.image] : []), ...(product.images ?? [])];
-}
-
-export function getCategory(slug: string) {
-  return categories.find((category) => category.slug === slug);
-}
-
-export function productsInCategory(slug: CategorySlug): Product[] {
-  const label = getCategory(slug)?.label;
-  return label ? products.filter((product) => product.line === label) : [];
-}

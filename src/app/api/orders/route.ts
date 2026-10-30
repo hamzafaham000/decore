@@ -4,7 +4,7 @@ import { commerce } from "@/lib/brand";
 import { getCheckoutMethod } from "@/lib/checkout-methods";
 import { prisma } from "@/lib/db";
 import { createAdvancePayment } from "@/lib/payments";
-import { getProduct } from "@/lib/products";
+import { getProduct } from "@/lib/catalog";
 import { quoteFor } from "@/lib/pricing";
 
 // The reference is the only thing that opens the receipt page, so it must not
@@ -30,7 +30,7 @@ function optionalText(value: unknown, max: number): string | null {
   return text(value, max);
 }
 
-function readOrder(body: unknown) {
+async function readOrder(body: unknown) {
   if (typeof body !== "object" || body === null) return { error: "Malformed request." } as const;
   const payload = body as Record<string, unknown>;
 
@@ -79,7 +79,8 @@ function readOrder(body: unknown) {
     }
     const item = raw as Record<string, unknown>;
 
-    const product = typeof item.slug === "string" ? getProduct(item.slug) : undefined;
+    const product =
+      typeof item.slug === "string" ? await getProduct(item.slug) : undefined;
     if (!product) return { error: "A piece in your selection is no longer available." } as const;
 
     const quantity = item.quantity;
@@ -130,7 +131,7 @@ export async function POST(request: Request) {
     return Response.json({ error: "Expected a JSON body." }, { status: 400 });
   }
 
-  const parsed = readOrder(body);
+  const parsed = await readOrder(body);
   if ("error" in parsed) {
     return Response.json({ error: parsed.error }, { status: 400 });
   }

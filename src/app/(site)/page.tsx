@@ -8,7 +8,7 @@ import { ProductImage } from "@/components/product-image";
 import { Reveal } from "@/components/reveal";
 import { commerce } from "@/lib/brand";
 import { formatPKR } from "@/lib/money";
-import { getProduct, products } from "@/lib/products";
+import { getFeatured, getProducts } from "@/lib/catalog";
 import { whatsappLink } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
@@ -33,13 +33,13 @@ const principles = [
   },
 ];
 
-export default function Home() {
-  const featured = getProduct("girih-linked-sculpture") ?? products[1];
+export default async function Home() {
+  const products = await getProducts();
+  if (!products.length) throw new Error("The catalogue is empty. Run `pnpm db:seed`.");
+  const featured = (await getFeatured()) ?? products[0];
 
-  // Only pieces with photography belong on the hero stage, strongest portrait first.
-  const showcase = ["suhbat-stacked-sculpture", "panah-table-sculpture", "girih-linked-sculpture"]
-    .map((slug) => getProduct(slug))
-    .filter((product): product is NonNullable<typeof product> => Boolean(product?.image));
+  // Only pieces with photography belong on the hero stage.
+  const showcase = products.filter((product) => product.image).slice(0, 3);
 
   return (
     <>

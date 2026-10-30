@@ -4,7 +4,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 import { commerce } from "@/lib/brand";
-import type { Product } from "@/lib/products";
+import type { Product } from "@/lib/catalog-types";
 
 export type CartItem = {
   slug: string;

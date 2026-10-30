@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowUpRightIcon } from "@/components/icons";
 import { ProductImage } from "@/components/product-image";
 import { formatPKR } from "@/lib/money";
-import type { Product } from "@/lib/products";
+import type { Product } from "@/lib/catalog-types";
 
 export function ProductCard({
   product,

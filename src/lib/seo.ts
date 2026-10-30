@@ -1,6 +1,6 @@
 import { brand, commerce } from "@/lib/brand";
 import { formatPKR } from "@/lib/money";
-import { categories, productImages, type Product } from "@/lib/products";
+import { productImages, type Product } from "@/lib/catalog-types";
 import { absoluteUrl, siteLanguage, siteUrl } from "@/lib/site";
 
 /**
@@ -75,9 +75,9 @@ export function siteJsonLd() {
   };
 }
 
-/** The shop category a piece belongs to, resolved from its display line. */
+/** The shop category a piece belongs to. */
 export function categoryOf(product: Product) {
-  return categories.find((category) => category.label === product.line);
+  return { slug: product.categorySlug, label: product.line };
 }
 
 export function productJsonLd(product: Product) {  const url = absoluteUrl(`/product/${product.slug}`);

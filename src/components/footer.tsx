@@ -2,11 +2,13 @@ import Link from "next/link";
 
 import { ArrowUpRightIcon, ChatIcon, MailIcon } from "@/components/icons";
 import { brand, commerce } from "@/lib/brand";
-import { categories } from "@/lib/products";
+import { getCategories } from "@/lib/catalog";
 import { formatPKR } from "@/lib/money";
 import { whatsappLink } from "@/lib/whatsapp";
 
-export function Footer() {
+export async function Footer() {
+  const categories = await getCategories();
+
   return (
     <footer className="mt-24 bg-ink text-canvas">
       <div className="page-shell grid gap-14 py-16 md:grid-cols-12 md:py-20">

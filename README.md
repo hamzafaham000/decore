@@ -4,8 +4,9 @@ A storefront for a short shop of office and home pieces. Next.js 16 (App Router,
 Cache Components), Tailwind 4, Postgres via Prisma 7.
 
 Launch state: fourteen pieces across four categories — seating, tables and desks, lighting
-and decor — three of them photographed, plus a cart and a checkout that records real orders. Card payments are **not** wired to a gateway yet — see
-[Payments](#payments).
+and decor — three of them photographed, plus a cart and a checkout that records real orders.
+Products, orders and first-party traffic are all managed from `/admin`. Card payments are
+**not** wired to a gateway yet — see [Payments](#payments).
 
 ## Run it
 
@@ -24,13 +25,23 @@ Then:
 pnpm install
 cp .env.example .env          # then edit
 pnpm prisma migrate deploy    # creates the tables
+pnpm db:seed                  # categories, fourteen pieces, the owner account
 pnpm dev                      # http://localhost:3000
 ```
 
+The seed reads `ADMIN_EMAIL` and `ADMIN_PASSWORD` and creates that owner, or resets the
+password if the account already exists. The checked-in example is `owner@example.com` /
+`change-me`; change both, then run `pnpm db:seed` again before the shop goes public.
+Sign in at `/admin`.
+
+The seed is a starting point, not a sync: run it once, then edit pieces in the dashboard.
+Running it again restores the seeded copy of every piece it knows about, so avoid it on a
+live catalogue unless that is what you want.
+
 Prefer Docker? `docker compose up -d` publishes the same database on `localhost:5433`
 (coexisting with the Homebrew server), so point `DATABASE_URL` at `5433` and run the
-migrations again. Change `docker-compose.yml` and `DATABASE_URL` together if you move
-it. Either way the credentials are `decore` / `decore`.
+migrations and seed again. Change `docker-compose.yml` and `DATABASE_URL` together if you
+move it. Either way the credentials are `decore` / `decore`.
 
 ## Deploy
 
@@ -42,12 +53,21 @@ Set these in the host's environment:
 
 | Variable | Needed for |
 | --- | --- |
-| `DATABASE_URL` | orders and receipts, at runtime only |
+| `DATABASE_URL` | catalogue, dashboard, orders and receipts, at runtime only |
 | `SITE_URL` | canonicals, sitemap, structured data — must be the real public origin |
 | `WHATSAPP_NUMBER` | the order hand-off |
+| `ADMIN_EMAIL`, `ADMIN_PASSWORD` | the owner account created by `pnpm db:seed` |
 
-The build compiles without any of them. Point `DATABASE_URL` at the production database and
-run `pnpm prisma migrate deploy` once before the first real order.
+The build compiles without any of them, but the shop cannot render a catalogue without a
+seeded database. Point `DATABASE_URL` at the production database, run
+`pnpm prisma migrate deploy` and `pnpm db:seed` once before the first real order.
+
+**Image uploads.** Files are written to `data/uploads` (outside `public`, gitignored) and
+served by `/api/uploads/[name]` with a one-year cache header. That is correct for a machine
+or a server with a persistent disk, but not for a read-only host such as Vercel: a deploy
+starts with an empty disk. Swap `saveUpload` in `src/lib/uploads.ts` for object storage
+(Blob, S3 or R2) before deploying there — products store plain URLs, so nothing else needs
+to change. Unexpired images in the catalogue keep working only as long as their files exist.
 
 ## Things to replace before launch
 
@@ -56,30 +76,35 @@ run `pnpm prisma migrate deploy` once before the first real order.
 | Brand name, tagline, email, WhatsApp display number | `src/lib/brand.ts` |
 | WhatsApp number that receives orders | `WHATSAPP_NUMBER` in `.env` |
 | Delivery fee, free-delivery threshold, advance % | `commerce` in `src/lib/brand.ts` |
-| The products themselves | `src/lib/products.ts` |
-| Product photography | `public/products/`, then set `image` per product |
-| Extra angles for a piece | `images` on the product — one line per photo |
+| The products themselves | `/admin/products` |
+| The owner login | `ADMIN_EMAIL` / `ADMIN_PASSWORD`, then `pnpm db:seed` |
+| Product photography | upload in the dashboard, or paste a URL |
 | Page measure, action appearance | `page-shell`, `btn-primary`, `btn-outline` in `src/app/globals.css` |
 | Public origin for canonicals, sitemap and structured data | `SITE_URL` in `.env` |
 
-`src/lib/products.ts` is the only source of catalogue data — every page, the cart, the
-checkout summary, and the order API read from it. Adding a piece means adding one object;
-`generateStaticParams` picks up the new URL at build time.
+Postgres is the catalogue. `src/lib/catalog.ts` reads it through `"use cache"` with the
+`catalog` tag and `cacheLife("max")`; every dashboard save calls `updateTag("catalog")`, so
+the next storefront request waits for the fresh copy instead of serving the old one. New
+pieces are live without a rebuild — `generateStaticParams` still prerenders the pieces that
+existed at build time, and anything added later renders on demand.
 
-Until a product has an `image`, it renders a drawn placeholder from `ProductImage`. That is
-deliberate: drop the file in, set the path, and the placeholder disappears.
+`prisma/seed-data.ts` is a snapshot of the catalogue as it was before the database took
+over — the seed source, never imported by the app.
 
-`image` is the cover. Add `images: [...]` for extra views and the detail page grows a thumbnail
+Until a product has an image, it renders a drawn placeholder from `ProductImage`. That is
+deliberate: add a photograph in the dashboard, and the placeholder disappears.
+
+The first image is the cover. Add more and the detail page grows a thumbnail
 strip under the image at every width — horizontal on phones, the same row on desktop so the
 photograph keeps the full column. JSON-LD and the sitemap emit every photo, not just the cover.
 
 The strip stays complete before the shoot: `ProductGallery` fills it to three views, so a piece
 with no photography shows Front view, Detail and In the room as three differently drawn
-placeholders, and a piece with only a cover gets the two angles still to come. Real `images`
+placeholders, and a piece with only a cover gets the two angles still to come. Real images
 replace the fillers from the front, so the layout never shifts when photography arrives.
 
-Categories live in the same file: four flat entries — Seating, Tables & Desks, Lighting, Decor —
-each with a slug, label and blurb. A product's `line` is one of those labels, and the
+Categories live in the same database: four flat entries — Seating, Tables & Desks, Lighting,
+Decor — each with a slug, label and blurb. A product's `line` is one of those labels, and the
 `/collection/[category]` route is generated from the list. A piece counts toward a category by
 matching its `line`; there is no second level and no parent "Furniture" page.
 
@@ -150,6 +175,30 @@ nothing here is marked down, rated, or labelled new, and the honest substitutes 
 the finish count, and the advance/balance split. `product.line` is printed as a label on each card and on
 the detail page, and the shop toolbar is the one place it becomes a filter.
 
+## Dashboard
+
+`/admin` is part of the same Next app, server-rendered behind a login and marked `noindex`.
+
+- **Overview** — orders waiting on a reply, seven-day order count and value, visits and
+  visitors, and how many pieces are live or drafted.
+- **Products** — list with live/draft filters, create, edit, delete, publish toggle, image
+  upload, image order, and the piece's position in the shop. Slugs are built from the name
+  and kept unique; a blank web address is filled in automatically.
+- **Orders** — status filters, search by reference, name or phone, the full receipt, status
+  and advance-received controls, and a WhatsApp link to the buyer.
+- **Traffic** — first-party page views over 7, 30 or 90 days: views by day, most-viewed pages,
+  referrers and devices.
+
+Authentication is database sessions. `AdminUser` stores a scrypt hash; `AdminSession` stores
+a SHA-256 hash of a random token, never the token itself. The browser holds a 12-hour
+`HttpOnly`, `SameSite=Lax` cookie. `src/lib/auth.ts` is the only code that reads or writes a
+session; every dashboard page and every admin action starts with `requireAdmin()`.
+
+Traffic is recorded by `AnalyticsBeacon`, a small client component mounted in the site layout
+that posts the path to `/api/track` on navigation. A random visitor id lives in
+`localStorage`, never a cookie; bots, `/admin` and `/api` are ignored. Rows land in
+`PageView`; nothing is shared with a third party.
+
 ## Orders
 
 `POST /api/orders` validates the payload, **re-reads every price from the catalogue** (the
@@ -170,9 +219,9 @@ Receipts are `noindex`. They carry a buyer's name and street address, and the re
 unguessable but not secret — an indexed `/order/*` is a page of personal data in a search engine.
 `/checkout` is excluded for the same reason, along with `/api`.
 
-There is no authentication in this app, so the reference is the only thing standing between one
-buyer and another's receipt. It comes from a cryptographic source for that reason; the receipt
-route is otherwise public.
+Receipts have no buyer login, so the reference is the only thing standing between one buyer
+and another's receipt. It comes from a cryptographic source for that reason. The dashboard
+login protects `/admin`; it does not gate the receipt route.
 
 Three checkout methods, all defined in `src/lib/checkout-methods.ts`:
 
@@ -239,9 +288,9 @@ groups make the intent explicit and survive a future tightening of `*`.
 
 **Answer engines.** `/llms.txt` is the short index (positioning, key facts, page list, pieces,
 questions) and `/llms-full.txt` carries the whole catalogue with specs, finishes, dimensions and
-process answers. Both are generated from `src/lib/products.ts` and `src/lib/seo.ts`, so a price or
-lead time cannot be quoted out of date. Both routes return `text/plain` and are listed in the
-README rather than linked in the footer.
+process answers. Both are generated from the database through `src/lib/catalog.ts` and
+`src/lib/seo.ts`, so a price or lead time cannot be quoted out of date. Both routes return
+`text/plain` and are listed in the README rather than linked in the footer.
 
 **What is deliberately absent.** There is no `aggregateRating`, because nothing has been rated; no
 `Review`, for the same reason. There is no `hasMerchantReturnPolicy` and no `shippingDetails`, because
@@ -262,7 +311,16 @@ merchant-listing visibility. Both are business inputs, not code gaps.
 ## Verified
 
 - `pnpm typecheck`, `pnpm build` and `pnpm lint` pass.
-- All routes return 200; product pages prerender as static, `/order/[reference]` streams.
+- All routes return 200; product pages render their content in the initial HTML with no
+  skeleton, and `/order/[reference]` blocks until the receipt is ready instead of streaming a
+  placeholder.
+- The dashboard was exercised end to end: sign in and out, overview counts, product list,
+  create/edit/delete, publish toggle, image upload, order status and advance toggle, and the
+  traffic page. A published test piece appeared on the storefront and its page returned 200
+  with its uploaded image; both the piece and the file were then removed.
+- Catalogue writes are visible on the next storefront request (the `catalog` tag is expired by
+  `updateTag`), and drafts never appear on the shop.
+- Page views recorded by the beacon appear in `/admin/analytics` with path, device and referrer.
 - Two real orders were placed through the API and read back from Postgres with correct
   totals, advance, and balance.
 - The refactor was checked by diffing the rendered DOM of twelve routes before and after,
@@ -310,5 +368,5 @@ merchant-listing visibility. Both are business inputs, not code gaps.
   asserted.
 - No real card is charged, and no gateway webhook exists.
 - The order confirmation page returns HTTP 200 with a not-found body for a bad reference.
-  That is Partial Prerender flushing the static shell first; worth a look if SEO or
-  monitoring cares about the status code.
+  The site layout streams its navigation before the page can set a status, and a receipt is
+  `noindex`, so this is cosmetic rather than an indexing problem.

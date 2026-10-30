@@ -6,7 +6,7 @@ import { useState } from "react";
 import { ArrowUpRightIcon } from "@/components/icons";
 import { ProductImage } from "@/components/product-image";
 import { formatPKR } from "@/lib/money";
-import type { Product } from "@/lib/products";
+import type { Product } from "@/lib/catalog-types";
 
 export type ShowcaseProduct = Pick<
   Product,
