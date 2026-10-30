@@ -101,21 +101,8 @@ export function AddToCart({ product }: { product: Product }) {
         </button>
       </div>
 
-      <dl className="mt-7 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-line bg-line text-xs">
-        <div className="bg-surface px-4 py-3.5">
-          <dt className="text-[10px] uppercase tracking-[0.14em] text-muted">Lead time</dt>
-          <dd className="mt-1.5 text-sm">{product.leadTimeWeeks} weeks</dd>
-        </div>
-        <div className="bg-surface px-4 py-3.5">
-          <dt className="text-[10px] uppercase tracking-[0.14em] text-muted">Advance</dt>
-          <dd className="mt-1.5 text-sm">{Math.round(commerce.advanceRate * 100)}% to confirm</dd>
-        </div>
-      </dl>
-
       <p className="mt-4 text-xs leading-relaxed text-muted">
-        Made to order. A {Math.round(commerce.advanceRate * 100)}% advance confirms the build; the
-        balance is collected on delivery. We confirm every order by hand before work
-        begins.
+        Made to order · {Math.round(commerce.advanceRate * 100)}% advance, balance on delivery.
       </p>
     </div>
   );

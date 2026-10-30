@@ -82,10 +82,6 @@ export default function Home() {
                   Talk to us
                 </a>
               </div>
-
-              <p className="mt-8 border-t border-line pt-5 text-[10px] uppercase tracking-[0.16em] text-muted">
-                Made to order · 4–8 weeks
-              </p>
             </Reveal>
           </div>
 
@@ -198,10 +194,6 @@ export default function Home() {
                 <div>
                   <dt className="text-[10px] uppercase tracking-[0.16em] text-canvas/65">Price</dt>
                   <dd className="mt-1.5 tabular-nums text-canvas/85">{formatPKR(featured.price)}</dd>
-                </div>
-                <div>
-                  <dt className="text-[10px] uppercase tracking-[0.16em] text-canvas/65">Lead time</dt>
-                  <dd className="mt-1.5 text-canvas/85">{featured.leadTimeWeeks} weeks</dd>
                 </div>
               </dl>
 

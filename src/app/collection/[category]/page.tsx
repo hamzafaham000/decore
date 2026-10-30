@@ -2,14 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { ArrowRightIcon, ChatIcon } from "@/components/icons";
 import { CollectionBrowser } from "@/components/collection-browser";
 import { JsonLd } from "@/components/json-ld";
 import { Reveal } from "@/components/reveal";
 import { brand } from "@/lib/brand";
 import { categories, getCategory, productsInCategory } from "@/lib/products";
 import { breadcrumbJsonLd, collectionJsonLd, siteOgImage } from "@/lib/seo";
-import { whatsappLink } from "@/lib/whatsapp";
 
 export function generateStaticParams() {
   return categories.map((category) => ({ category: category.slug }));
@@ -53,7 +51,6 @@ export default async function CategoryPage({ params }: PageProps<"/collection/[c
 
   const items = productsInCategory(category.slug);
   const path = `/collection/${category.slug}`;
-  const others = categories.filter((candidate) => candidate.slug !== category.slug);
   const description = `${category.blurb} ${items.length} built to order in Pakistan and delivered nationwide.`;
 
   return (
@@ -87,20 +84,16 @@ export default async function CategoryPage({ params }: PageProps<"/collection/[c
         </nav>
       </div>
 
-      <header className="page-shell pb-12 pt-10 md:pb-16 md:pt-14">
-        <div className="grid items-end gap-10 border-b border-line pb-12 lg:grid-cols-12 lg:gap-12">
+      <header className="page-shell pb-10 pt-8 md:pb-12 md:pt-10">
+        <div className="grid items-end gap-6 lg:grid-cols-12 lg:gap-12">
           <div className="lg:col-span-7">
             <Reveal>
-              <p className="eyebrow flex items-center gap-3 text-muted">
-                <span className="h-px w-8 bg-muted/50" />
-                Shop
-              </p>
-              <h1 className="display-1 mt-7">{category.label}</h1>
+              <h1 className="display-1">{category.label}</h1>
             </Reveal>
           </div>
 
           <Reveal delay={0.08} className="lg:col-span-5">
-            <p className="max-w-[46ch] leading-relaxed text-muted">{category.intro}</p>
+            <p className="max-w-[42ch] leading-relaxed text-muted">{category.blurb}</p>
           </Reveal>
         </div>
       </header>
@@ -109,35 +102,6 @@ export default async function CategoryPage({ params }: PageProps<"/collection/[c
         <CollectionBrowser products={items} active={category.slug} />
       </div>
 
-      <section className="page-shell mt-20">
-        <div className="flex flex-col gap-6 border-t border-line pt-8 md:flex-row md:items-center md:justify-between">
-          <div>
-            <p className="eyebrow text-muted">Keep looking</p>
-            <div className="mt-4 flex flex-wrap gap-2">
-              {others.map((other) => (
-                <Link
-                  key={other.slug}
-                  href={`/collection/${other.slug}`}
-                  className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 text-[0.8125rem] text-muted transition-colors hover:border-ink/40 hover:text-ink"
-                >
-                  {other.label}
-                  <ArrowRightIcon className="h-3.5 w-3.5" />
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          <a
-            href={whatsappLink(`Hello — I would like to ask about your ${category.label.toLowerCase()}.`)}
-            target="_blank"
-            rel="noreferrer"
-            className="btn-outline self-start md:self-auto"
-          >
-            <ChatIcon className="h-4 w-4" />
-            Ask about a piece
-          </a>
-        </div>
-      </section>
     </div>
   );
 }

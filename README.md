@@ -75,7 +75,7 @@ phones. A piece with only a cover renders exactly as before, with no empty frame
 sitemap emit every photo, not just the cover.
 
 Categories live in the same file: four flat entries — Seating, Tables & Desks, Lighting, Decor —
-each with a slug, label, blurb and intro. A product's `line` is one of those labels, and the
+each with a slug, label and blurb. A product's `line` is one of those labels, and the
 `/collection/[category]` route is generated from the list. A piece counts toward a category by
 matching its `line`; there is no second level and no parent "Furniture" page.
 
@@ -106,17 +106,16 @@ Hero with the interactive lookbook → a selection from the shop → our approac
 a pine featured-piece band → the closing invitation.
 
 The hero pairs the statement with a stage showing the three photographed pieces. Thumbnails switch
-the image, name, finish, lead time and price without leaving the page; a single proof line under the
-CTAs carries the made-to-order window. The featured-piece band reads its materials, height, price
-and lead time from the catalogue rather than repeating them by hand.
+the image, name, finish and price without leaving the page. The featured-piece band reads its
+materials, height and price from the catalogue rather than repeating them by hand.
 
 All of the copy, prices and images render on the server. The client components on the route are
 `Reveal` (a fade and rise as each block enters view), `HeroShowcase`, the header (which carries the
 search dialog), and the cart drawer.
 
-The home page states no product counts — not in the hero, not beside “Start here”, and not in
-the closing link. The lead-time window is the only number it asserts. Delivery and advance terms
-live where they change a decision — the product accordion, the cart, and the checkout summary.
+The home page states no product counts and no lead-time window — not in the hero, not beside
+“Start here”, and not in the closing link. Lead time and advance terms live where they change a
+decision — the product page, the cart, and the checkout summary.
 
 The shop page adds a sticky toolbar. Category chips are real links to `/collection/seating`,
 `/collection/tables`, `/collection/lighting` and `/collection/decor`, so they are crawlable; Room
@@ -143,8 +142,8 @@ suggestion chips). An empty result offers a clear action and a route to us. The 
 client-rendered, so it adds nothing to the static HTML or to SEO.
 
 Where this kind of page normally puts a discount badge or a struck-through price, there is none —
-nothing here is marked down, rated, or labelled new, and the honest substitutes are the lead time,
-the price, and the advance/balance split. `product.line` is printed as a label on each card and on
+nothing here is marked down, rated, or labelled new, and the honest substitutes are the price,
+the finish count, and the advance/balance split. `product.line` is printed as a label on each card and on
 the detail page, and the shop toolbar is the one place it becomes a filter.
 
 ## Orders
@@ -295,7 +294,7 @@ merchant-listing visibility. Both are business inputs, not code gaps.
 
 - **The hero has been checked at three widths, not every width.** At 1440×900 the stage measures
   416 × 499 inside a 783 px hero; at 390 the stage is 350 × 420, and the three-piece lookbook
-  switches image, name, finish, lead time and price with real clicks. 1000 px was checked too.
+  switches image, name, finish and price with real clicks. 1000 px was checked too.
   Widths between those stops are inferred, not measured.
 - The cart drawer only renders when open, so the Escape handler, the body scroll lock, the width
   of the progress rule, and the two money rows were confirmed by reading code and the compiled

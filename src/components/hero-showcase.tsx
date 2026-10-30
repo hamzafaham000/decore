@@ -10,7 +10,7 @@ import type { Product } from "@/lib/products";
 
 export type ShowcaseProduct = Pick<
   Product,
-  "slug" | "name" | "price" | "finishes" | "leadTimeWeeks" | "image" | "glyph"
+  "slug" | "name" | "price" | "finishes" | "image" | "glyph"
 >;
 
 /**
@@ -73,7 +73,7 @@ export function HeroShowcase({
             <ArrowUpRightIcon className="h-3.5 w-3.5 shrink-0 translate-y-0.5 text-muted transition-transform group-hover:-translate-y-0 group-hover:translate-x-0.5" />
           </Link>
           <p className="mt-1.5 text-xs leading-relaxed text-muted">
-            {piece.finishes[0]} · Made to order, {piece.leadTimeWeeks} weeks
+            {piece.finishes[0]} · Made to order
           </p>
         </div>
         <p className="shrink-0 pt-1.5 text-sm tabular-nums">{formatPKR(piece.price)}</p>

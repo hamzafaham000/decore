@@ -63,7 +63,7 @@ export function CollectionBrowser({
 
   return (
     <div>
-      <div className="sticky top-[4.5rem] z-30 -mx-[clamp(1.25rem,4vw,4rem)] border-y border-line bg-canvas/90 px-[clamp(1.25rem,4vw,4rem)] backdrop-blur-md md:top-20">
+      <div className="sticky top-[4.5rem] z-30 -mx-[clamp(1.25rem,4vw,4rem)] border-b border-line bg-canvas/90 px-[clamp(1.25rem,4vw,4rem)] backdrop-blur-md md:top-20">
         <div className="flex flex-col gap-3 py-4">
           <nav aria-label="Shop categories">
             <ul className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -152,29 +152,24 @@ export function CollectionBrowser({
               />
             </div>
 
-            <p className="ml-auto shrink-0 text-xs tabular-nums text-muted" aria-live="polite">
-              {String(filtered.length).padStart(2, "0")}{" "}
-              {filtered.length === 1 ? "piece" : "pieces"}
-            </p>
+            <div className="ml-auto flex shrink-0 items-center gap-3 text-xs">
+              <p className="tabular-nums text-muted" aria-live="polite">
+                {String(filtered.length).padStart(2, "0")}{" "}
+                {filtered.length === 1 ? "piece" : "pieces"}
+              </p>
+              {isFiltered && (
+                <button
+                  type="button"
+                  onClick={clear}
+                  className="text-muted underline underline-offset-4 transition-colors hover:text-ink"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
-
-      {isFiltered && (
-        <div className="mt-5 flex items-center gap-3 text-xs text-muted">
-          <span>
-            Showing {surface === "all" ? "every room" : surfaceLabels[surface].toLowerCase()} ·{" "}
-            {priceLabels[band].toLowerCase()}
-          </span>
-          <button
-            type="button"
-            onClick={clear}
-            className="underline underline-offset-4 transition-colors hover:text-ink"
-          >
-            Clear
-          </button>
-        </div>
-      )}
 
       <motion.div layout className="mt-8 grid gap-x-6 gap-y-14 md:grid-cols-2 lg:grid-cols-3">
         <AnimatePresence mode="popLayout" initial={false}>

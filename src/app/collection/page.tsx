@@ -32,34 +32,20 @@ export default function CollectionPage() {
   return (
     <div className="pb-4">
       <JsonLd data={collectionJsonLd(products, { name: "The Decore shop" })} />
-      <header className="page-shell pb-12 pt-10 md:pb-16 md:pt-16">
-        <div className="grid items-end gap-10 border-b border-line pb-12 lg:grid-cols-12 lg:gap-12">
+      <header className="page-shell pb-10 pt-8 md:pb-12 md:pt-12">
+        <div className="grid items-end gap-6 lg:grid-cols-12 lg:gap-12">
           <div className="lg:col-span-8">
             <Reveal>
-              <p className="eyebrow flex items-center gap-3 text-muted">
-                <span className="h-px w-8 bg-muted/50" />
-                Shop · Office &amp; home
-              </p>
-              <h1 className="display-1 mt-7">Every piece</h1>
+              <h1 className="display-1">Every piece</h1>
             </Reveal>
           </div>
 
           <Reveal delay={0.08} className="lg:col-span-4">
-            <p className="max-w-[42ch] leading-relaxed text-muted">
-              A short list, built to order by workshops we visit in person — seating, tables,
-              lighting and decor.
+            <p className="max-w-[38ch] leading-relaxed text-muted">
+              Built to order by workshops we visit in person.
             </p>
           </Reveal>
         </div>
-
-        <Reveal delay={0.12}>
-          <dl className="mt-6 flex flex-wrap gap-x-10 gap-y-3 text-xs text-muted">
-            <div className="flex items-baseline gap-2">
-              <dt className="eyebrow text-muted">Lead time</dt>
-              <dd className="text-ink">4–8 weeks</dd>
-            </div>
-          </dl>
-        </Reveal>
       </header>
 
       <div className="page-shell">

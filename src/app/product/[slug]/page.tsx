@@ -163,7 +163,7 @@ async function ProductDetail({ params }: { params: Promise<{ slug: string }> }) 
                     content: <SpecList rows={product.dimensions} />,
                   },
                   {
-                    title: "Delivery & lead time",
+                    title: "Delivery",
                     content: (
                       <div className="space-y-3">
                         <p>

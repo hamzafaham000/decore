@@ -13,29 +13,21 @@ export const categories = [
     slug: "seating",
     label: "Seating",
     blurb: "Chairs, benches and stools built for long sittings.",
-    intro:
-      "Seating built to order in solid wood and hand-finished upholstery — lounge chairs, benches and stools for homes and offices across Pakistan. Every piece is made to your choice of finish and delivered in four to eight weeks.",
   },
   {
     slug: "tables",
     label: "Tables & Desks",
     blurb: "Desks, consoles and side tables in solid hardwood.",
-    intro:
-      "Writing desks, consoles and side tables built to order from solid hardwood and finished by hand. Sized for real rooms — a study desk that fits a small wall, a console shallow enough for a hallway. Delivered across Pakistan in four to eight weeks.",
   },
   {
     slug: "lighting",
     label: "Lighting",
     blurb: "Pendants, floor and table lamps in brass and wood.",
-    intro:
-      "Pendant, floor and table lamps made in brass, wood and handmade paper. Warm, low-glare light for reading corners, dining tables and desks. Wired for Pakistani mains and delivered across the country in four to eight weeks.",
   },
   {
     slug: "decor",
     label: "Decor",
     blurb: "Sculptural pieces in marble, brass and wood.",
-    intro:
-      "Sculptural decor in marble, brass and solid wood — table pieces and small sculptures that hold a room together. Made to order in small batches and delivered across Pakistan in four to six weeks.",
   },
 ] as const;
 
