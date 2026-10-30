@@ -12,8 +12,14 @@ export type Product = {
   materials: { label: string; value: string }[];
   dimensions: { label: string; value: string }[];
   leadTimeWeeks: number;
-  /** Drop this once real photography exists at this path. */
+  /** Cover photograph. Used by cards, the cart, search and Open Graph. */
   image?: string;
+  /**
+   * Extra views for the product gallery — detail, in-room, scale.
+   * The cover is not repeated here; the gallery renders it first.
+   * A piece with only a cover shows no thumbnails at all.
+   */
+  images?: string[];
   glyph: "seating" | "lighting" | "workspace" | "object";
 };
 
@@ -177,4 +183,9 @@ export const products: Product[] = [
 
 export function getProduct(slug: string): Product | undefined {
   return products.find((product) => product.slug === slug);
+}
+
+/** Every photograph for a piece, cover first. Empty when nothing is shot yet. */
+export function productImages(product: Pick<Product, "image" | "images">): string[] {
+  return [...(product.image ? [product.image] : []), ...(product.images ?? [])];
 }

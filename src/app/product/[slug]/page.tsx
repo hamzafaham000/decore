@@ -8,7 +8,7 @@ import { AddToCart } from "@/components/add-to-cart";
 import { ArrowUpRightIcon, ChatIcon } from "@/components/icons";
 import { JsonLd } from "@/components/json-ld";
 import { ProductCard } from "@/components/product-card";
-import { ProductImage } from "@/components/product-image";
+import { ProductGallery } from "@/components/product-gallery";
 import { brand, commerce } from "@/lib/brand";
 import { formatPKR } from "@/lib/money";
 import { getProduct, products } from "@/lib/products";
@@ -110,15 +110,7 @@ async function ProductDetail({ params }: { params: Promise<{ slug: string }> }) 
 
         <div className="mt-6 grid gap-x-14 gap-y-12 lg:grid-cols-[1.08fr_0.92fr] lg:mt-9">
           <div className="lg:sticky lg:top-28 lg:self-start">
-            <div className="aspect-4/5 overflow-hidden rounded-2xl bg-surface">
-              <ProductImage
-                product={product}
-                sizes="(min-width: 1024px) 52vw, 100vw"
-                priority
-                framed
-                alt={`${product.name} — ${product.tagline}`}
-              />
-            </div>
+            <ProductGallery product={product} />
             <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-xs text-muted">
               <span>
                 {product.line} · {String(index + 1).padStart(2, "0")} /{" "}

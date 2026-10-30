@@ -1,6 +1,6 @@
 import { brand, commerce } from "@/lib/brand";
 import { formatPKR } from "@/lib/money";
-import type { Product } from "@/lib/products";
+import { productImages, type Product } from "@/lib/products";
 import { absoluteUrl, siteLanguage, siteUrl } from "@/lib/site";
 
 /**
@@ -87,7 +87,9 @@ export function productJsonLd(product: Product) {
         name: product.name,
         description: product.description,
         url,
-        ...(product.image ? { image: [absoluteUrl(product.image)] } : {}),
+        ...(productImages(product).length > 0
+          ? { image: productImages(product).map(absoluteUrl) }
+          : {}),
         brand: { "@type": "Brand", name: brand.name },
         category: `${product.line} · furniture and objects`,
         material: product.materials

@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 
 import { absoluteUrl } from "@/lib/site";
-import { products } from "@/lib/products";
+import { products, productImages } from "@/lib/products";
 
 /**
  * `lastModified` is left out on purpose: the catalogue is code with no per-piece
@@ -22,7 +22,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     url: absoluteUrl(`/product/${product.slug}`),
     changeFrequency: "monthly",
     priority: 0.8,
-    ...(product.image ? { images: [absoluteUrl(product.image)] } : {}),
+    ...(productImages(product).length > 0
+      ? { images: productImages(product).map(absoluteUrl) }
+      : {}),
   }));
 
   return [...pages, ...pieces];
