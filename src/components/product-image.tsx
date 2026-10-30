@@ -50,16 +50,12 @@ const glyphs = {
  */
 function Placeholder({ glyph, compact }: { glyph: Product["glyph"]; compact: boolean }) {
   return (
-    <div className="relative h-full w-full overflow-hidden bg-[linear-gradient(155deg,#f0ece4_0%,#e8e3d9_55%,#e0dbd0_100%)]">
-      <div
-        aria-hidden
-        className="absolute inset-0 opacity-60 [background-image:radial-gradient(circle_at_30%_18%,rgba(255,255,255,0.7),transparent_45%)]"
-      />
-      <div aria-hidden className="absolute inset-[7%] border border-ink/[0.06]" />
+    <div className="relative h-full w-full overflow-hidden bg-[#ebe6dc]">
+      <div aria-hidden className="absolute inset-[7%] border border-ink/[0.05]" />
       <svg
         viewBox="0 0 120 120"
         aria-hidden
-        className={`absolute inset-0 m-auto text-ink/25 ${compact ? "h-[52%] w-[52%]" : "h-[40%] w-[40%]"}`}
+        className={`absolute inset-0 m-auto ${compact ? "h-[52%] w-[52%] text-ink/25" : "h-[40%] w-[40%] text-ink/[0.13]"}`}
         fill="none"
         stroke="currentColor"
         strokeWidth="1.1"
@@ -69,7 +65,7 @@ function Placeholder({ glyph, compact }: { glyph: Product["glyph"]; compact: boo
         {glyphs[glyph]}
       </svg>
       {!compact && (
-        <p className="absolute bottom-[9%] left-1/2 -translate-x-1/2 text-[9px] uppercase tracking-[0.22em] text-ink/50">
+        <p className="absolute bottom-[9%] left-1/2 -translate-x-1/2 text-[9px] uppercase tracking-[0.22em] text-ink/40">
           Photography to come
         </p>
       )}
