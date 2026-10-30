@@ -44,18 +44,57 @@ const glyphs = {
   ),
 } as const;
 
+export type PlaceholderView = "front" | "detail" | "room";
+
 /**
  * Stands in for product photography. Set `image` on a product in
  * src/lib/products.ts and the real photograph replaces this automatically.
+ *
+ * The three views are drawn differently on purpose: the gallery keeps a
+ * thumbnail strip before the shoot, and identical tiles would look like a
+ * broken switcher rather than three angles still to come.
  */
-function Placeholder({ glyph, compact }: { glyph: Product["glyph"]; compact: boolean }) {
+function Placeholder({
+  glyph,
+  compact,
+  view,
+}: {
+  glyph: Product["glyph"];
+  compact: boolean;
+  view: PlaceholderView;
+}) {
+  const size = compact
+    ? view === "detail"
+      ? "h-[72%] w-[72%]"
+      : view === "room"
+        ? "h-[42%] w-[42%]"
+        : "h-[52%] w-[52%]"
+    : view === "detail"
+      ? "h-[70%] w-[70%]"
+      : view === "room"
+        ? "h-[30%] w-[30%]"
+        : "h-[40%] w-[40%]";
+
+  const position =
+    view === "detail" && !compact
+      ? "absolute -right-[6%] -top-[2%]"
+      : view === "room"
+        ? "absolute left-1/2 top-[58%] -translate-x-1/2 -translate-y-1/2"
+        : "absolute inset-0 m-auto";
+
   return (
     <div className="relative h-full w-full overflow-hidden bg-[#ebe6dc]">
       <div aria-hidden className="absolute inset-[7%] border border-ink/[0.05]" />
+      {view === "room" && (
+        <div
+          aria-hidden
+          className={`absolute inset-x-[10%] h-px bg-ink/[0.09] ${compact ? "top-[72%]" : "top-[66%]"}`}
+        />
+      )}
       <svg
         viewBox="0 0 120 120"
         aria-hidden
-        className={`absolute inset-0 m-auto ${compact ? "h-[52%] w-[52%] text-ink/25" : "h-[40%] w-[40%] text-ink/[0.13]"}`}
+        className={`${position} ${size} ${compact ? "text-ink/25" : "text-ink/[0.13]"}`}
         fill="none"
         stroke="currentColor"
         strokeWidth="1.1"
@@ -82,6 +121,7 @@ export function ProductImage({
   className = "",
   framed = false,
   compact = false,
+  view = "front",
 }: {
   product: Pick<Product, "name" | "image" | "glyph">;
   sizes: string;
@@ -99,6 +139,8 @@ export function ProductImage({
   framed?: boolean;
   /** Hides the placeholder caption for thumbnails. */
   compact?: boolean;
+  /** Which drawn view to use when the piece has no photograph. */
+  view?: PlaceholderView;
 }) {
   if (framed && product.image) {
     return (
@@ -131,7 +173,7 @@ export function ProductImage({
           className="object-cover"
         />
       ) : (
-        <Placeholder glyph={product.glyph} compact={compact} />
+        <Placeholder glyph={product.glyph} compact={compact} view={view} />
       )}
     </div>
   );

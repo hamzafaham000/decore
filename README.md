@@ -71,8 +71,12 @@ deliberate: drop the file in, set the path, and the placeholder disappears.
 
 `image` is the cover. Add `images: [...]` for extra views and the detail page grows a thumbnail
 strip — vertical beside the image on desktop so it stays above the fold, horizontal under it on
-phones. A piece with only a cover renders exactly as before, with no empty frame. JSON-LD and the
-sitemap emit every photo, not just the cover.
+phones. JSON-LD and the sitemap emit every photo, not just the cover.
+
+The strip stays complete before the shoot: `ProductGallery` fills it to three views, so a piece
+with no photography shows Front view, Detail and In the room as three differently drawn
+placeholders, and a piece with only a cover gets the two angles still to come. Real `images`
+replace the fillers from the front, so the layout never shifts when photography arrives.
 
 Categories live in the same file: four flat entries — Seating, Tables & Desks, Lighting, Decor —
 each with a slug, label and blurb. A product's `line` is one of those labels, and the
