@@ -189,7 +189,6 @@ export function CollectionBrowser({
             >
               <ProductCard
                 product={product}
-                index={products.findIndex((candidate) => candidate.slug === product.slug)}
                 sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
                 headingLevel="h2"
               />

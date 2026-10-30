@@ -120,7 +120,7 @@ export default function Home() {
         <div className="mt-12 grid gap-x-6 gap-y-14 md:grid-cols-2 lg:grid-cols-3 md:mt-16">
           {products.map((product, index) => (
             <Reveal key={product.slug} delay={(index % 3) * 0.06}>
-              <ProductCard product={product} index={index} />
+              <ProductCard product={product} />
             </Reveal>
           ))}
         </div>

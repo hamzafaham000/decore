@@ -123,10 +123,7 @@ async function ProductDetail({ params }: { params: Promise<{ slug: string }> }) 
           <div className="lg:sticky lg:top-28 lg:self-start">
             <ProductGallery product={product} />
             <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-xs text-muted">
-              <span>
-                {product.line} · {String(index + 1).padStart(2, "0")} /{" "}
-                {String(products.length).padStart(2, "0")}
-              </span>
+              <span>{product.line}</span>
               <span>{surfaceCopy(product.surfaces)}</span>
             </div>
           </div>

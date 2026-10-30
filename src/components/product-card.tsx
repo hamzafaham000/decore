@@ -7,13 +7,11 @@ import type { Product } from "@/lib/products";
 
 export function ProductCard({
   product,
-  index,
   priority = false,
   sizes = "(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw",
   headingLevel = "h3",
 }: {
   product: Product;
-  index?: number;
   priority?: boolean;
   sizes?: string;
   /** Cards sit under an h1 on the shop page, so they use h2 there. */
@@ -45,16 +43,9 @@ export function ProductCard({
 
       <div className="mt-5 flex items-start justify-between gap-6">
         <div className="min-w-0">
-          <div className="flex items-baseline gap-3">
-            {typeof index === "number" && (
-              <span className="eyebrow shrink-0 text-muted">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-            )}
-            <Heading className="truncate text-[1.3rem] leading-tight tracking-[-0.01em]">
-              {product.name}
-            </Heading>
-          </div>
+          <Heading className="truncate text-[1.3rem] leading-tight tracking-[-0.01em]">
+            {product.name}
+          </Heading>
           <p className="mt-1.5 text-xs text-muted">
             {product.line} · {product.finishes.length} finishes
           </p>
