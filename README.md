@@ -70,8 +70,8 @@ Until a product has an `image`, it renders a drawn placeholder from `ProductImag
 deliberate: drop the file in, set the path, and the placeholder disappears.
 
 `image` is the cover. Add `images: [...]` for extra views and the detail page grows a thumbnail
-strip — vertical beside the image on desktop so it stays above the fold, horizontal under it on
-phones. JSON-LD and the sitemap emit every photo, not just the cover.
+strip under the image at every width — horizontal on phones, the same row on desktop so the
+photograph keeps the full column. JSON-LD and the sitemap emit every photo, not just the cover.
 
 The strip stays complete before the shoot: `ProductGallery` fills it to three views, so a piece
 with no photography shows Front view, Detail and In the room as three differently drawn

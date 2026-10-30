@@ -88,13 +88,13 @@ export function ProductGallery({
   }
 
   return (
-    <div className={multiple ? "flex flex-col lg:flex-row lg:items-start lg:gap-3" : undefined}>
+    <div className="flex flex-col">
       {multiple && (
         <div
           role="tablist"
           aria-label={`${product.name} images`}
           onKeyDown={onKeyDown}
-          className="order-2 mt-3 flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] lg:order-1 lg:mt-0 lg:w-16 lg:shrink-0 lg:flex-col lg:overflow-visible lg:pb-0 [&::-webkit-scrollbar]:hidden"
+          className="order-2 mt-3 flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] md:mt-4 [&::-webkit-scrollbar]:hidden"
         >
           {views.map((item, index) => (
             <button
@@ -127,7 +127,7 @@ export function ProductGallery({
         </div>
       )}
 
-      <div className={`order-1 ${multiple ? "lg:order-2 lg:min-w-0 lg:flex-1" : ""}`}>
+      <div className="order-1">
         <div
           id="product-image-panel"
           role={multiple ? "tabpanel" : undefined}
