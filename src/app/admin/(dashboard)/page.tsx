@@ -45,22 +45,22 @@ export default async function OverviewPage() {
   const orderValue = revenueWeek._sum.total ?? 0;
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-6">
       <PageHeader
-        title="The shop, today."
-        description={formatDate(new Date())}
+        title="Overview"
+        description={`${formatDate(new Date())} · orders, catalogue and traffic at a glance.`}
         action={
-          <Link href="/admin/products/new" className="btn-primary">
-            Add a piece
+          <Link href="/admin/products/new" className="a-btn a-btn-primary">
+            Add product
           </Link>
         }
       />
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <Stat
-          label="To confirm"
+          label="Awaiting confirmation"
           value={formatCount(awaiting)}
-          note={awaiting === 1 ? "One order is waiting" : "Orders waiting on a reply"}
+          note={awaiting === 1 ? "One order needs a reply" : "Orders waiting on a reply"}
           href="/admin/orders?status=AWAITING_CONFIRMATION"
         />
         <Stat
@@ -87,7 +87,7 @@ export default async function OverviewPage() {
         action={
           <Link
             href="/admin/orders"
-            className="inline-flex items-center gap-1.5 text-xs text-muted transition-colors hover:text-ink"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-[#5e6963] transition-colors hover:text-[#111815]"
           >
             All orders
             <ArrowRightIcon className="h-3.5 w-3.5" />
@@ -95,82 +95,100 @@ export default async function OverviewPage() {
         }
       >
         {recent.length === 0 ? (
-          <Empty>No orders yet. They will appear here as soon as the shop takes one.</Empty>
+          <Empty>No orders yet. They appear here as soon as the shop takes one.</Empty>
         ) : (
-          <ul className="divide-y divide-line">
-            {recent.map((order) => (
-              <li key={order.id}>
-                <Link
-                  href={`/admin/orders/${order.id}`}
-                  className="flex flex-wrap items-center justify-between gap-x-5 gap-y-2 px-5 py-4 transition-colors hover:bg-ink/[0.03]"
-                >
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium">{order.customerName}</p>
-                    <p className="mt-0.5 text-xs text-muted">
-                      {order.reference} · {formatDate(order.createdAt, true)} ·{" "}
-                      {order._count.items} {order._count.items === 1 ? "piece" : "pieces"}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <p className="text-sm tabular-nums">{formatPKR(order.total)}</p>
-                    <StatusPill status={order.status} />
-                  </div>
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <div className="overflow-x-auto">
+            <table className="a-table min-w-[42rem]">
+              <thead>
+                <tr>
+                  <th>Customer</th>
+                  <th>Order</th>
+                  <th>Placed</th>
+                  <th className="num">Total</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {recent.map((order) => (
+                  <tr key={order.id}>
+                    <td>
+                      <Link
+                        href={`/admin/orders/${order.id}`}
+                        className="font-medium hover:text-[#1f513f]"
+                      >
+                        {order.customerName}
+                      </Link>
+                    </td>
+                    <td>
+                      <Link href={`/admin/orders/${order.id}`} className="a-code text-[#5e6963]">
+                        {order.reference}
+                      </Link>
+                      <p className="mt-0.5 text-[11px] text-[#657069]">
+                        {order._count.items} {order._count.items === 1 ? "piece" : "pieces"}
+                      </p>
+                    </td>
+                    <td className="text-xs text-[#657069]">{formatDate(order.createdAt, true)}</td>
+                    <td className="num">{formatPKR(order.total)}</td>
+                    <td>
+                      <StatusPill status={order.status} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </Panel>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-2">
         <Panel title="Catalogue">
-          <div className="divide-y divide-line">
+          <div className="divide-y divide-[#e8ece9]">
             <Link
               href="/admin/products?status=live"
-              className="flex items-center justify-between px-5 py-4 text-sm transition-colors hover:bg-ink/[0.03]"
+              className="flex items-center justify-between px-5 py-3.5 text-sm transition-colors hover:bg-[#f7f9f7]"
             >
-              <span>Live pieces</span>
-              <span className="tabular-nums text-muted">{live}</span>
+              <span>Live products</span>
+              <span className="tabular-nums text-[#5e6963]">{live}</span>
             </Link>
             <Link
               href="/admin/products?status=draft"
-              className="flex items-center justify-between px-5 py-4 text-sm transition-colors hover:bg-ink/[0.03]"
+              className="flex items-center justify-between px-5 py-3.5 text-sm transition-colors hover:bg-[#f7f9f7]"
             >
               <span>Drafts</span>
-              <span className="tabular-nums text-muted">{drafts}</span>
+              <span className="tabular-nums text-[#5e6963]">{drafts}</span>
             </Link>
             <Link
               href="/admin/products/new"
-              className="flex items-center justify-between px-5 py-4 text-sm transition-colors hover:bg-ink/[0.03]"
+              className="flex items-center justify-between px-5 py-3.5 text-sm transition-colors hover:bg-[#f7f9f7]"
             >
-              <span className="text-muted">Add a piece</span>
-              <ArrowRightIcon className="h-4 w-4 text-muted" />
+              <span className="text-[#5e6963]">Add product</span>
+              <ArrowRightIcon className="h-4 w-4 text-[#657069]" />
             </Link>
           </div>
         </Panel>
 
         <Panel title="Traffic">
-          <div className="divide-y divide-line">
+          <div className="divide-y divide-[#e8ece9]">
             <Link
               href="/admin/analytics"
-              className="flex items-center justify-between px-5 py-4 text-sm transition-colors hover:bg-ink/[0.03]"
+              className="flex items-center justify-between px-5 py-3.5 text-sm transition-colors hover:bg-[#f7f9f7]"
             >
               <span>Visits, last 7 days</span>
-              <span className="tabular-nums text-muted">{formatCount(viewsWeek)}</span>
+              <span className="tabular-nums text-[#5e6963]">{formatCount(viewsWeek)}</span>
             </Link>
             <Link
               href="/admin/analytics"
-              className="flex items-center justify-between px-5 py-4 text-sm transition-colors hover:bg-ink/[0.03]"
+              className="flex items-center justify-between px-5 py-3.5 text-sm transition-colors hover:bg-[#f7f9f7]"
             >
               <span>Visitors, last 7 days</span>
-              <span className="tabular-nums text-muted">{formatCount(visitorsWeek.length)}</span>
+              <span className="tabular-nums text-[#5e6963]">{formatCount(visitorsWeek.length)}</span>
             </Link>
             <Link
               href="/admin/analytics"
-              className="flex items-center justify-between px-5 py-4 text-sm transition-colors hover:bg-ink/[0.03]"
+              className="flex items-center justify-between px-5 py-3.5 text-sm transition-colors hover:bg-[#f7f9f7]"
             >
-              <span className="text-muted">Open traffic</span>
-              <ArrowRightIcon className="h-4 w-4 text-muted" />
+              <span className="text-[#5e6963]">Open traffic</span>
+              <ArrowRightIcon className="h-4 w-4 text-[#657069]" />
             </Link>
           </div>
         </Panel>

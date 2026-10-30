@@ -124,22 +124,17 @@ export default async function AnalyticsPage({
   const topDevices = [...devices.entries()].sort((a, b) => b[1] - a[1]);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <PageHeader
         title="Traffic"
         description="First-party counts from this site only. No third-party scripts, no cookies."
         action={
-          <div className="flex items-center gap-2">
+          <div className="a-segment">
             {ranges.map((range) => (
               <Link
                 key={range.value}
                 href={`/admin/analytics?range=${range.value}`}
                 aria-current={days === range.value ? "page" : undefined}
-                className={`rounded-full px-3.5 py-2 text-xs transition-colors ${
-                  days === range.value
-                    ? "bg-pine text-canvas"
-                    : "border border-line text-muted hover:border-ink/30 hover:text-ink"
-                }`}
               >
                 {range.label}
               </Link>
@@ -170,20 +165,20 @@ export default async function AnalyticsPage({
             Nothing recorded yet. Visits are counted from the moment this dashboard goes live.
           </Empty>
         ) : (
-          <div className="px-5 py-6">
-            <div className="flex h-44 items-end gap-[2px]" role="img" aria-label="Page views per day">
+          <div className="px-5 py-5">
+            <div className="a-chart" role="img" aria-label="Page views per day">
               {buckets.map((bucket) => (
                 <div
                   key={bucket.key}
                   title={`${bucket.label}: ${bucket.views} views, ${bucket.visitors.size} visitors`}
-                  className="flex-1 rounded-t-[3px] bg-pine/80 transition-colors hover:bg-pine"
+                  className="a-chart-bar"
                   style={{
-                    height: bucket.views ? `${Math.max((bucket.views / maxDay) * 100, 3)}%` : "1px",
+                    height: bucket.views ? `${Math.max((bucket.views / maxDay) * 100, 3)}%` : "2px",
                   }}
                 />
               ))}
             </div>
-            <div className="mt-3 flex justify-between text-[11px] text-muted">
+            <div className="mt-3 flex justify-between text-[11px] text-[#657069]">
               <span>{buckets[0]?.label}</span>
               {buckets.length > 2 && <span>{buckets[Math.floor(buckets.length / 2)]?.label}</span>}
               <span>{buckets[buckets.length - 1]?.label}</span>
@@ -192,29 +187,26 @@ export default async function AnalyticsPage({
         )}
       </Panel>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-2">
         <Panel title="Most viewed">
           {topPaths.length === 0 ? (
             <Empty>No page views yet.</Empty>
           ) : (
-            <ul className="divide-y divide-line">
+            <ul className="divide-y divide-[#e8ece9]">
               {topPaths.map(([path, count]) => (
                 <li key={path} className="px-5 py-3">
                   <div className="flex items-baseline justify-between gap-4 text-sm">
                     <Link
                       href={path}
                       target="_blank"
-                      className="truncate underline-offset-4 hover:underline"
+                      className="truncate hover:text-[#1f513f] hover:underline hover:underline-offset-2"
                     >
                       {labelFor(path)}
                     </Link>
-                    <span className="shrink-0 tabular-nums text-muted">{formatCount(count)}</span>
+                    <span className="shrink-0 tabular-nums text-[#5e6963]">{formatCount(count)}</span>
                   </div>
-                  <div className="mt-2 h-1 rounded-full bg-line">
-                    <div
-                      className="h-1 rounded-full bg-pine/70"
-                      style={{ width: `${(count / topPaths[0][1]) * 100}%` }}
-                    />
+                  <div className="a-meter mt-2">
+                    <span style={{ width: `${(count / topPaths[0][1]) * 100}%` }} />
                   </div>
                 </li>
               ))}
@@ -222,19 +214,19 @@ export default async function AnalyticsPage({
           )}
         </Panel>
 
-        <div className="space-y-6">
+        <div className="space-y-4">
           <Panel title="Where visits came from">
             {topSources.length === 0 ? (
               <Empty>No visits yet.</Empty>
             ) : (
-              <ul className="divide-y divide-line">
+              <ul className="divide-y divide-[#e8ece9]">
                 {topSources.map(([source, count]) => (
                   <li
                     key={source}
                     className="flex items-baseline justify-between gap-4 px-5 py-3 text-sm"
                   >
                     <span className="truncate">{source}</span>
-                    <span className="shrink-0 tabular-nums text-muted">{formatCount(count)}</span>
+                    <span className="shrink-0 tabular-nums text-[#5e6963]">{formatCount(count)}</span>
                   </li>
                 ))}
               </ul>
@@ -245,14 +237,14 @@ export default async function AnalyticsPage({
             {topDevices.length === 0 ? (
               <Empty>No visits yet.</Empty>
             ) : (
-              <ul className="divide-y divide-line">
+              <ul className="divide-y divide-[#e8ece9]">
                 {topDevices.map(([device, count]) => (
                   <li
                     key={device}
                     className="flex items-baseline justify-between gap-4 px-5 py-3 text-sm"
                   >
                     <span>{device}</span>
-                    <span className="tabular-nums text-muted">{formatCount(count)}</span>
+                    <span className="tabular-nums text-[#5e6963]">{formatCount(count)}</span>
                   </li>
                 ))}
               </ul>

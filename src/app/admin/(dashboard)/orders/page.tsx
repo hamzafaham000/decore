@@ -58,14 +58,14 @@ export default async function OrdersPage({
   for (const group of grouped) counts[group.status] = group._count._all;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <PageHeader
         title="Orders"
         description="Every order the shop has taken. Confirming one does not send anything automatically."
       />
 
-      <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-        <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+        <div className="a-segment overflow-x-auto">
           {filters.map((filter) => {
             const active = status === filter.value;
             const href = {
@@ -80,14 +80,10 @@ export default async function OrdersPage({
               <Link
                 key={filter.value}
                 href={href}
-                className={`rounded-full px-3.5 py-2 text-xs transition-colors ${
-                  active
-                    ? "bg-pine text-canvas"
-                    : "border border-line text-muted hover:border-ink/30 hover:text-ink"
-                }`}
+                aria-current={active ? "page" : undefined}
               >
                 {filter.label}
-                <span className={`ml-2 tabular-nums ${active ? "text-canvas/60" : "text-muted/70"}`}>
+                <span className={`tabular-nums ${active ? "opacity-55" : "opacity-70"}`}>
                   {counts[filter.value] ?? 0}
                 </span>
               </Link>
@@ -105,7 +101,7 @@ export default async function OrdersPage({
             aria-label="Search orders"
             className="field max-w-xs"
           />
-          <button type="submit" className="btn-outline">
+          <button type="submit" className="a-btn a-btn-secondary">
             Search
           </button>
         </form>
@@ -116,39 +112,39 @@ export default async function OrdersPage({
           <Empty>{query ? `No orders match “${query}”.` : "No orders here yet."}</Empty>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[44rem] text-left text-sm">
+            <table className="a-table min-w-[44rem]">
               <thead>
-                <tr className="border-b border-line text-xs uppercase tracking-[0.12em] text-muted">
-                  <th className="px-5 py-3 font-medium">Reference</th>
-                  <th className="px-3 py-3 font-medium">Customer</th>
-                  <th className="px-3 py-3 font-medium">Placed</th>
-                  <th className="px-3 py-3 text-right font-medium">Total</th>
-                  <th className="px-5 py-3 font-medium">Status</th>
+                <tr>
+                  <th>Reference</th>
+                  <th>Customer</th>
+                  <th>Placed</th>
+                  <th className="num">Total</th>
+                  <th>Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-line">
+              <tbody>
                 {orders.map((order) => (
-                  <tr key={order.id} className="transition-colors hover:bg-ink/[0.02]">
-                    <td className="px-5 py-3">
+                  <tr key={order.id}>
+                    <td>
                       <Link
                         href={`/admin/orders/${order.id}`}
-                        className="font-medium underline-offset-4 hover:underline"
+                        className="a-code font-medium text-[#1f513f] hover:underline hover:underline-offset-2"
                       >
                         {order.reference}
                       </Link>
-                      <p className="mt-0.5 text-xs text-muted">
+                      <p className="mt-0.5 text-[11px] text-[#657069]">
                         {order._count.items} {order._count.items === 1 ? "piece" : "pieces"}
                       </p>
                     </td>
-                    <td className="px-3 py-3">
+                    <td>
                       <p>{order.customerName}</p>
-                      <p className="mt-0.5 text-xs text-muted">{order.phone}</p>
+                      <p className="mt-0.5 text-xs text-[#657069]">{order.phone}</p>
                     </td>
-                    <td className="px-3 py-3 text-xs text-muted">
+                    <td className="text-xs text-[#657069]">
                       {formatDate(order.createdAt, true)}
                     </td>
-                    <td className="px-3 py-3 text-right tabular-nums">{formatPKR(order.total)}</td>
-                    <td className="px-5 py-3">
+                    <td className="num">{formatPKR(order.total)}</td>
+                    <td>
                       <StatusPill status={order.status} />
                     </td>
                   </tr>
@@ -160,7 +156,7 @@ export default async function OrdersPage({
       </Panel>
 
       {orders.length === 200 && (
-        <p className="text-xs text-muted">
+        <p className="text-xs text-[#657069]">
           Showing the 200 most recent. Narrow the list with a status or a search.
         </p>
       )}

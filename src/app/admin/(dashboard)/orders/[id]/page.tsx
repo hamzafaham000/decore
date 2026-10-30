@@ -31,7 +31,7 @@ function waNumber(phone: string) {
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-baseline justify-between gap-4 text-sm">
-      <dt className="text-muted">{label}</dt>
+      <dt className="text-[#5e6963]">{label}</dt>
       <dd className="tabular-nums">{value}</dd>
     </div>
   );
@@ -50,21 +50,17 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
   if (!order) notFound();
 
   const method = getCheckoutMethod(order.method);
-  const address = [
-    order.addressLine1,
-    order.addressLine2,
-    order.city,
-  ].filter(Boolean);
+  const address = [order.addressLine1, order.addressLine2, order.city].filter(Boolean);
 
   const whatsapp = `https://wa.me/${waNumber(order.phone)}?text=${encodeURIComponent(
     `Hello ${order.customerName.split(" ")[0]} — this is about your order ${order.reference}.`,
   )}`;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <Link
         href="/admin/orders"
-        className="inline-flex items-center gap-1.5 text-xs text-muted transition-colors hover:text-ink"
+        className="inline-flex items-center gap-1.5 text-xs font-medium text-[#5e6963] transition-colors hover:text-[#111815]"
       >
         <ArrowRightIcon className="h-3.5 w-3.5 rotate-180" />
         All orders
@@ -76,52 +72,48 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
         action={<StatusPill status={order.status} />}
       />
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
-        <div className="space-y-6">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_19rem]">
+        <div className="min-w-0 space-y-4">
           <Panel title="Pieces">
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[26rem] text-left text-sm">
+              <table className="a-table min-w-[28rem]">
                 <thead>
-                  <tr className="border-b border-line text-xs uppercase tracking-[0.12em] text-muted">
-                    <th className="px-5 py-3 font-medium">Piece</th>
-                    <th className="px-3 py-3 text-right font-medium">Qty</th>
-                    <th className="px-3 py-3 text-right font-medium">Each</th>
-                    <th className="px-5 py-3 text-right font-medium">Line</th>
+                  <tr>
+                    <th>Piece</th>
+                    <th className="num">Qty</th>
+                    <th className="num">Each</th>
+                    <th className="num">Line</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-line">
+                <tbody>
                   {order.items.map((item) => (
                     <tr key={item.id}>
-                      <td className="px-5 py-3">
+                      <td>
                         <Link
                           href={`/product/${item.productSlug}`}
                           target="_blank"
-                          className="underline-offset-4 hover:underline"
+                          className="font-medium hover:text-[#1f513f] hover:underline hover:underline-offset-2"
                         >
                           {item.name}
                         </Link>
-                        <p className="mt-0.5 text-xs text-muted">/{item.productSlug}</p>
+                        <p className="a-code mt-0.5 text-[#657069]">/{item.productSlug}</p>
                       </td>
-                      <td className="px-3 py-3 text-right tabular-nums">{item.quantity}</td>
-                      <td className="px-3 py-3 text-right tabular-nums">
-                        {formatPKR(item.unitPrice)}
-                      </td>
-                      <td className="px-5 py-3 text-right tabular-nums">
-                        {formatPKR(item.unitPrice * item.quantity)}
-                      </td>
+                      <td className="num">{item.quantity}</td>
+                      <td className="num">{formatPKR(item.unitPrice)}</td>
+                      <td className="num">{formatPKR(item.unitPrice * item.quantity)}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
 
-            <dl className="space-y-2 border-t border-line px-5 py-4">
+            <dl className="space-y-2 border-t border-[#e2e7e3] px-5 py-4">
               <Row label="Subtotal" value={formatPKR(order.subtotal)} />
               <Row
                 label="Delivery"
                 value={order.deliveryFee === 0 ? "Included" : formatPKR(order.deliveryFee)}
               />
-              <div className="flex items-baseline justify-between gap-4 border-t border-line pt-2 text-sm font-medium">
+              <div className="flex items-baseline justify-between gap-4 border-t border-[#e2e7e3] pt-2.5 text-sm font-semibold">
                 <dt>Total</dt>
                 <dd className="tabular-nums">{formatPKR(order.total)}</dd>
               </div>
@@ -132,15 +124,15 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
             <div className="space-y-4 px-5 py-4">
               <div>
                 <p className="text-sm font-medium">{order.customerName}</p>
-                <p className="mt-0.5 text-sm text-muted">{order.phone}</p>
-                {order.email && <p className="mt-0.5 text-sm text-muted">{order.email}</p>}
+                <p className="mt-0.5 text-sm text-[#5e6963]">{order.phone}</p>
+                {order.email && <p className="mt-0.5 text-sm text-[#5e6963]">{order.email}</p>}
               </div>
 
-              <p className="text-sm leading-relaxed text-muted">{address.join(", ")}</p>
+              <p className="text-sm leading-relaxed text-[#5e6963]">{address.join(", ")}</p>
 
               {order.notes && (
-                <div className="rounded-xl bg-canvas px-4 py-3">
-                  <p className="text-xs uppercase tracking-[0.12em] text-muted">Notes</p>
+                <div className="rounded-lg bg-[#f5f8f6] px-4 py-3">
+                  <p className="text-[11px] font-medium text-[#657069]">Notes</p>
                   <p className="mt-1.5 text-sm leading-relaxed">{order.notes}</p>
                 </div>
               )}
@@ -149,7 +141,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
                 href={whatsapp}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 rounded-full border border-line px-4 py-2.5 text-xs font-medium transition-colors hover:border-ink hover:bg-ink hover:text-canvas"
+                className="a-btn a-btn-secondary"
               >
                 <ChatIcon className="h-4 w-4" />
                 Message on WhatsApp
@@ -158,7 +150,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
           </Panel>
         </div>
 
-        <div className="space-y-6">
+        <div className="min-w-0 space-y-4">
           <Panel title="Status">
             <form action={updateStatus} className="space-y-3 px-5 py-4">
               <input type="hidden" name="id" value={order.id} />
@@ -174,7 +166,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
                   </option>
                 ))}
               </select>
-              <button type="submit" className="btn-primary w-full">
+              <button type="submit" className="a-btn a-btn-primary w-full">
                 Update status
               </button>
             </form>
@@ -185,14 +177,14 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
               <Row label="Advance due" value={formatPKR(order.advanceDue)} />
               <Row label="Balance" value={formatPKR(order.balanceDue)} />
             </dl>
-            <form action={setAdvancePaid} className="border-t border-line px-5 py-4">
+            <form action={setAdvancePaid} className="border-t border-[#e2e7e3] px-5 py-4">
               <input type="hidden" name="id" value={order.id} />
-              <p className="text-xs leading-relaxed text-muted">
+              <p className="text-xs leading-relaxed text-[#5e6963]">
                 {order.advancePaid
                   ? "The advance has been received."
                   : "The advance has not been marked as received."}
               </p>
-              <button type="submit" className="btn-outline mt-3 w-full">
+              <button type="submit" className="a-btn a-btn-secondary mt-3 w-full">
                 {order.advancePaid ? "Mark advance unpaid" : "Mark advance received"}
               </button>
             </form>
@@ -200,12 +192,12 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
 
           <Panel title="Delivery">
             <div className="space-y-2 px-5 py-4 text-sm">
-              <p className="text-muted">
+              <p className="text-[#5e6963]">
                 {order.cancellationOk
                   ? "Customer accepts a substitute if this piece cannot be made."
                   : "No substitution agreed for this order."}
               </p>
-              <p className="text-xs text-muted">
+              <p className="text-xs text-[#657069]">
                 Last change {formatDate(order.updatedAt, true)}
               </p>
             </div>

@@ -1,6 +1,10 @@
+import { connection } from "next/server";
+
 import Link from "next/link";
 
 import { AdminNav } from "@/components/admin/admin-nav";
+import { AdminTopbar } from "@/components/admin/admin-topbar";
+import { formatDate } from "@/components/admin/ui";
 import { ArrowUpRightIcon } from "@/components/icons";
 import { requireAdmin } from "@/lib/auth";
 import { brand } from "@/lib/brand";
@@ -10,36 +14,51 @@ import { logout } from "./actions";
 export const instant = false;
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+  await connection();
+
   const admin = await requireAdmin();
+  const initial = admin.email.slice(0, 1).toUpperCase();
 
   return (
     <div className="min-h-screen">
-      <aside className="fixed inset-y-0 left-0 hidden w-64 flex-col border-r border-line bg-surface px-5 py-7 lg:flex">
-        <Link href="/admin" className="flex items-baseline gap-2 px-3">
-          <span className="font-display text-2xl tracking-[-0.01em]">{brand.name}</span>
-          <span className="text-[11px] uppercase tracking-[0.16em] text-muted">Dashboard</span>
+      <aside className="a-sidebar fixed inset-y-0 left-0 z-30 hidden w-60 flex-col px-3.5 py-5 lg:flex">
+        <Link href="/admin" className="flex items-center gap-2.5 px-2">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#e8f0ec] text-[13px] font-semibold text-[#1f513f]">
+            D
+          </span>
+          <span className="leading-tight">
+            <span className="block text-sm font-semibold text-white">{brand.name}</span>
+            <span className="block text-[11px] text-white/55">Admin</span>
+          </span>
         </Link>
 
-        <AdminNav />
+        <div className="mt-7">
+          <AdminNav />
+        </div>
 
-        <div className="mt-auto space-y-3 px-3">
+        <div className="mt-auto space-y-3 border-t border-white/10 pt-4">
           <Link
             href="/"
             target="_blank"
-            className="inline-flex items-center gap-1.5 text-xs text-muted transition-colors hover:text-ink"
+            className="flex items-center gap-2 rounded-md px-2.5 py-1.5 text-xs text-white/55 transition-colors hover:bg-white/[0.06] hover:text-white"
           >
             View shop
-            <ArrowUpRightIcon className="h-3.5 w-3.5" />
+            <ArrowUpRightIcon className="h-3 w-3" />
           </Link>
 
-          <p className="truncate text-xs text-muted" title={admin.email}>
-            {admin.email}
-          </p>
+          <div className="flex items-center gap-2.5 px-2.5">
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/10 text-[11px] font-semibold text-white">
+              {initial}
+            </span>
+            <span className="truncate text-[11px] text-white/55" title={admin.email}>
+              {admin.email}
+            </span>
+          </div>
 
-          <form action={logout}>
+          <form action={logout} className="px-2.5">
             <button
               type="submit"
-              className="text-xs text-muted underline-offset-4 transition-colors hover:text-ink hover:underline"
+              className="text-[11px] text-white/55 transition-colors hover:text-white"
             >
               Sign out
             </button>
@@ -47,28 +66,43 @@ export default async function DashboardLayout({ children }: { children: React.Re
         </div>
       </aside>
 
-      <div className="lg:pl-64">
-        <header className="flex items-center justify-between gap-4 border-b border-line px-5 py-4 lg:hidden">
-          <Link href="/admin" className="font-display text-xl">
-            {brand.name}
-          </Link>
-          <div className="flex items-center gap-4">
-            <Link href="/" target="_blank" className="text-xs text-muted">
-              View shop
+      <div className="lg:pl-60">
+        <header className="sticky top-0 z-20 flex h-14 items-center justify-between gap-4 border-b border-[#e2e7e3] bg-white/85 px-4 backdrop-blur-md sm:px-6 lg:px-10">
+          <div className="flex items-center gap-2">
+            <Link href="/admin" className="text-sm font-semibold lg:hidden">
+              {brand.name}
             </Link>
-            <form action={logout}>
-              <button type="submit" className="text-xs text-muted">
+            <span className="text-[11px] text-[#657069] lg:hidden">Admin</span>
+            <div className="hidden lg:block">
+              <AdminTopbar />
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <span className="hidden text-xs text-[#657069] md:block">{formatDate(new Date())}</span>
+            <Link
+              href="/"
+              target="_blank"
+              className="hidden items-center gap-1.5 text-xs font-medium text-[#5e6963] transition-colors hover:text-[#111815] sm:inline-flex"
+            >
+              View shop
+              <ArrowUpRightIcon className="h-3.5 w-3.5" />
+            </Link>
+            <form action={logout} className="lg:hidden">
+              <button type="submit" className="text-xs text-[#5e6963]">
                 Sign out
               </button>
             </form>
           </div>
         </header>
 
-        <div className="border-b border-line px-4 py-2.5 lg:hidden">
+        <div className="border-b border-[#e2e7e3] bg-white px-4 py-2 sm:px-6 lg:hidden">
           <AdminNav horizontal />
         </div>
 
-        <main className="mx-auto w-full max-w-6xl px-5 py-8 lg:px-10 lg:py-12">{children}</main>
+        <main className="mx-auto w-full max-w-[80rem] px-4 py-7 sm:px-6 lg:px-10 lg:py-9">
+          {children}
+        </main>
       </div>
     </div>
   );

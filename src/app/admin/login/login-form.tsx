@@ -10,36 +10,36 @@ export function LoginForm() {
   const [state, action, pending] = useActionState(login, initial);
 
   return (
-    <form action={action} className="mt-8 space-y-4">
+    <form action={action} className="mt-7 space-y-4">
       <label className="block">
-        <span className="text-xs uppercase tracking-[0.14em] text-muted">Email</span>
+        <span className="a-label">Email</span>
         <input
           name="email"
           type="email"
           autoComplete="username"
           required
-          className="field mt-2"
+          className="field mt-1.5"
         />
       </label>
 
       <label className="block">
-        <span className="text-xs uppercase tracking-[0.14em] text-muted">Password</span>
+        <span className="a-label">Password</span>
         <input
           name="password"
           type="password"
           autoComplete="current-password"
           required
-          className="field mt-2"
+          className="field mt-1.5"
         />
       </label>
 
       {state.error && (
-        <p role="alert" className="text-sm text-clay">
+        <p role="alert" className="text-sm text-[#a03d2c]">
           {state.error}
         </p>
       )}
 
-      <button type="submit" disabled={pending} className="btn-primary w-full">
+      <button type="submit" disabled={pending} className="a-btn a-btn-primary w-full">
         {pending ? "Signing in…" : "Sign in"}
       </button>
     </form>

@@ -11,12 +11,10 @@ export function PageHeader({
   action?: ReactNode;
 }) {
   return (
-    <header className="flex flex-wrap items-end justify-between gap-5">
+    <header className="flex flex-wrap items-end justify-between gap-4">
       <div>
-        <h1 className="display-3">{title}</h1>
-        {description && (
-          <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted">{description}</p>
-        )}
+        <h1 className="a-title">{title}</h1>
+        {description && <p className="a-sub max-w-2xl">{description}</p>}
       </div>
       {action}
     </header>
@@ -35,10 +33,10 @@ export function Panel({
   className?: string;
 }) {
   return (
-    <section className={`rounded-2xl border border-line bg-surface ${className}`}>
+    <section className={`a-card ${className}`}>
       {(title || action) && (
-        <header className="flex items-center justify-between gap-4 border-b border-line px-5 py-4">
-          {title && <h2 className="text-sm font-medium">{title}</h2>}
+        <header className="a-card-head">
+          {title && <h2 className="a-card-title">{title}</h2>}
           {action}
         </header>
       )}
@@ -60,17 +58,16 @@ export function Stat({
 }) {
   const body = (
     <>
-      <p className="eyebrow text-muted">{label}</p>
-      <p className="mt-4 font-display text-[2.1rem] leading-none tracking-[-0.02em] tabular-nums">
+      <p className="a-label">{label}</p>
+      <p className="mt-3 text-[1.75rem] font-semibold leading-none tracking-[-0.03em] tabular-nums">
         {value}
       </p>
-      {note && <p className="mt-3 text-xs leading-relaxed text-muted">{note}</p>}
+      {note && <p className="mt-3 text-[11.5px] leading-relaxed text-[#657069]">{note}</p>}
     </>
   );
 
   const className =
-    "block rounded-2xl border border-line bg-surface p-5 transition-colors" +
-    (href ? " hover:border-ink/30" : "");
+    "a-card block p-5" + (href ? " transition-colors hover:border-[#cdd5cf]" : "");
 
   return href ? (
     <Link href={href} className={className}>
@@ -82,11 +79,11 @@ export function Stat({
 }
 
 const statusStyles: Record<string, string> = {
-  AWAITING_CONFIRMATION: "bg-clay/10 text-clay",
-  CONFIRMED: "bg-pine-soft text-pine",
-  PAID: "bg-pine text-canvas",
-  DISPATCHED: "bg-ink/10 text-ink",
-  CANCELLED: "bg-line text-muted line-through",
+  AWAITING_CONFIRMATION: "a-pill a-pill-wait",
+  CONFIRMED: "a-pill a-pill-ok",
+  PAID: "a-pill a-pill-solid",
+  DISPATCHED: "a-pill a-pill-neutral",
+  CANCELLED: "a-pill a-pill-off",
 };
 
 const statusLabels: Record<string, string> = {
@@ -99,18 +96,14 @@ const statusLabels: Record<string, string> = {
 
 export function StatusPill({ status }: { status: string }) {
   return (
-    <span
-      className={`inline-flex whitespace-nowrap rounded-full px-2.5 py-1 text-[11px] font-medium ${
-        statusStyles[status] ?? "bg-line text-muted"
-      }`}
-    >
+    <span className={statusStyles[status] ?? "a-pill a-pill-neutral"}>
       {statusLabels[status] ?? status}
     </span>
   );
 }
 
 export function Empty({ children }: { children: ReactNode }) {
-  return <p className="px-5 py-12 text-center text-sm text-muted">{children}</p>;
+  return <p className="px-5 py-14 text-center text-sm text-[#5e6963]">{children}</p>;
 }
 
 export function formatDate(date: Date, withTime = false) {

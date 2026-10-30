@@ -8,7 +8,7 @@ import { prisma } from "@/lib/db";
 import { createProduct } from "../actions";
 import { ProductForm } from "../product-form";
 
-export const metadata = { title: "Add a piece" };
+export const metadata = { title: "Add product" };
 
 export const instant = false;
 
@@ -18,15 +18,15 @@ export default async function NewProductPage() {
   const categories = await prisma.category.findMany({ orderBy: { position: "asc" } });
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <PageHeader
-        title="Add a piece"
+        title="Add product"
         description="Start with the essentials. You can add photography and specification afterwards."
       />
 
       {categories.length === 0 ? (
-        <p className="rounded-2xl border border-line bg-surface px-5 py-10 text-center text-sm text-muted">
-          There are no categories yet. Run <code className="text-ink">pnpm db:seed</code> once, then
+        <p className="a-card px-5 py-10 text-center text-sm text-[#5e6963]">
+          There are no categories yet. Run <code className="a-code">pnpm db:seed</code> once, then
           come back.
         </p>
       ) : (
@@ -36,11 +36,11 @@ export default async function NewProductPage() {
             id: category.id,
             label: category.label,
           }))}
-          submitLabel="Save piece"
+          submitLabel="Save product"
         />
       )}
 
-      <Link href="/admin/products" className="btn-quiet">
+      <Link href="/admin/products" className="a-btn a-btn-quiet">
         Back to products
       </Link>
     </div>

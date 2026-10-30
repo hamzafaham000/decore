@@ -52,9 +52,9 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="text-xs uppercase tracking-[0.14em] text-muted">{label}</span>
+      <span className="a-label">{label}</span>
       {children}
-      {hint && <span className="mt-1.5 block text-xs leading-relaxed text-muted">{hint}</span>}
+      {hint && <span className="mt-1.5 block text-[11px] leading-relaxed text-[#657069]">{hint}</span>}
     </label>
   );
 }
@@ -69,12 +69,12 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-2xl border border-line bg-surface p-5 md:p-6">
-      <h2 className="text-sm font-medium">{title}</h2>
+    <section className="a-card p-5">
+      <h2 className="text-[13px] font-semibold">{title}</h2>
       {description && (
-        <p className="mt-1.5 max-w-xl text-xs leading-relaxed text-muted">{description}</p>
+        <p className="mt-1 max-w-xl text-[11.5px] leading-relaxed text-[#657069]">{description}</p>
       )}
-      <div className="mt-5 space-y-4">{children}</div>
+      <div className="mt-4 space-y-4">{children}</div>
     </section>
   );
 }
@@ -147,7 +147,7 @@ export function ProductForm({
   }
 
   return (
-    <form action={formAction} className="space-y-6">
+    <form action={formAction} className="space-y-5">
       {product && <input type="hidden" name="id" value={product.id} />}
 
       {images.map((url) => (
@@ -155,21 +155,24 @@ export function ProductForm({
       ))}
 
       {state.error && (
-        <p role="alert" className="rounded-xl border border-clay/30 bg-clay/[0.06] px-4 py-3 text-sm text-clay">
+        <p
+          role="alert"
+          className="rounded-lg border border-[#edcfc8] bg-[#fbedea] px-4 py-3 text-sm text-[#a03d2c]"
+        >
           {state.error}
         </p>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
-        <div className="space-y-6">
-          <Section title="The piece">
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_19rem]">
+        <div className="min-w-0 space-y-5">
+          <Section title="Basics">
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Name">
                 <input
                   name="name"
                   required
                   defaultValue={product?.name}
-                  className="field mt-2"
+                  className="field mt-1.5"
                   placeholder="Suhbat Stacked Sculpture"
                 />
               </Field>
@@ -179,7 +182,7 @@ export function ProductForm({
                   name="categoryId"
                   required
                   defaultValue={product?.categoryId ?? ""}
-                  className="field mt-2"
+                  className="field mt-1.5"
                 >
                   <option value="" disabled>
                     Choose one
@@ -198,7 +201,7 @@ export function ProductForm({
                 name="tagline"
                 required
                 defaultValue={product?.tagline}
-                className="field mt-2"
+                className="field mt-1.5"
                 placeholder="Two arms of cast stone, holding a single sphere of brass."
               />
             </Field>
@@ -209,18 +212,18 @@ export function ProductForm({
                 required
                 rows={6}
                 defaultValue={product?.description}
-                className="field mt-2 resize-y leading-relaxed"
+                className="field mt-1.5 resize-y leading-relaxed"
               />
             </Field>
 
             <Field
               label="Web address"
-              hint={`Shown as /product/${product?.slug ?? "your-piece"}. Leave blank to build it from the name.`}
+              hint={`Shown as /product/${product?.slug ?? "your-product"}. Leave blank to build it from the name.`}
             >
               <input
                 name="slug"
                 defaultValue={product?.slug}
-                className="field mt-2"
+                className="field mt-1.5"
                 placeholder="suhbat-stacked-sculpture"
                 spellCheck={false}
               />
@@ -229,7 +232,7 @@ export function ProductForm({
 
           <Section
             title="Details"
-            description="One per line, as Label: Value. These become the specification list on the piece page."
+            description="One per line, as Label: Value. These become the specification list on the product page."
           >
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Materials">
@@ -237,7 +240,7 @@ export function ProductForm({
                   name="materials"
                   rows={6}
                   defaultValue={product ? linesOf(product.materials) : ""}
-                  className="field mt-2 resize-y font-mono text-xs leading-relaxed"
+                  className="field mt-1.5 resize-y font-mono text-xs leading-relaxed"
                   placeholder={"Frame: Solid walnut\nFinish: Hardwax oil"}
                 />
               </Field>
@@ -247,7 +250,7 @@ export function ProductForm({
                   name="dimensions"
                   rows={6}
                   defaultValue={product ? linesOf(product.dimensions) : ""}
-                  className="field mt-2 resize-y font-mono text-xs leading-relaxed"
+                  className="field mt-1.5 resize-y font-mono text-xs leading-relaxed"
                   placeholder={"Width: 64 cm\nDepth: 68 cm\nHeight: 72 cm"}
                 />
               </Field>
@@ -258,7 +261,7 @@ export function ProductForm({
                 name="finishes"
                 rows={4}
                 defaultValue={product?.finishes.join("\n")}
-                className="field mt-2 resize-y font-mono text-xs leading-relaxed"
+                className="field mt-1.5 resize-y font-mono text-xs leading-relaxed"
                 placeholder={"Natural walnut\nSmoked oak\nBlackened brass"}
               />
             </Field>
@@ -270,7 +273,7 @@ export function ProductForm({
                 {images.map((url, index) => (
                   <li
                     key={`${url}-${index}`}
-                    className="overflow-hidden rounded-xl border border-line bg-canvas"
+                    className="overflow-hidden rounded-lg border border-[#e2e7e3] bg-[#f3f5f3]"
                   >
                     <div
                       role="img"
@@ -278,8 +281,8 @@ export function ProductForm({
                       className="aspect-square bg-cover bg-center"
                       style={{ backgroundImage: `url("${url.replace(/"/g, "%22")}")` }}
                     />
-                    <div className="flex items-center justify-between gap-1 border-t border-line px-2 py-1.5">
-                      <span className="text-[10px] uppercase tracking-[0.12em] text-muted">
+                    <div className="flex items-center justify-between gap-1 border-t border-[#e2e7e3] bg-white px-2 py-1.5">
+                      <span className="text-[10px] font-medium text-[#657069]">
                         {index === 0 ? "Cover" : index + 1}
                       </span>
                       <span className="flex items-center gap-1">
@@ -288,7 +291,7 @@ export function ProductForm({
                           aria-label="Move earlier"
                           disabled={index === 0}
                           onClick={() => move(index, -1)}
-                          className="rounded px-1 text-sm text-muted disabled:opacity-30"
+                          className="rounded px-1 text-sm text-[#5e6963] disabled:opacity-30"
                         >
                           ←
                         </button>
@@ -297,7 +300,7 @@ export function ProductForm({
                           aria-label="Move later"
                           disabled={index === images.length - 1}
                           onClick={() => move(index, 1)}
-                          className="rounded px-1 text-sm text-muted disabled:opacity-30"
+                          className="rounded px-1 text-sm text-[#5e6963] disabled:opacity-30"
                         >
                           →
                         </button>
@@ -305,7 +308,7 @@ export function ProductForm({
                           type="button"
                           aria-label="Remove image"
                           onClick={() => setImages((current) => current.filter((_, i) => i !== index))}
-                          className="rounded px-1 text-sm text-clay"
+                          className="rounded px-1 text-sm text-[#a03d2c]"
                         >
                           ×
                         </button>
@@ -315,7 +318,7 @@ export function ProductForm({
                 ))}
               </ul>
             ) : (
-              <p className="text-xs text-muted">
+              <p className="text-xs text-[#657069]">
                 No photographs yet. The shop draws a placeholder until you add one.
               </p>
             )}
@@ -332,34 +335,34 @@ export function ProductForm({
               />
               <label
                 htmlFor="image-upload"
-                className={`btn-outline ${uploading ? "pointer-events-none opacity-50" : ""}`}
+                className={`a-btn a-btn-secondary ${uploading ? "pointer-events-none opacity-50" : ""}`}
               >
                 {uploading ? "Uploading…" : "Upload images"}
               </label>
-              <span className="text-xs text-muted">JPEG, PNG, WebP or AVIF, up to 10 MB each.</span>
+              <span className="text-[11px] text-[#657069]">JPEG, PNG, WebP or AVIF, up to 10 MB each.</span>
             </div>
 
-            {uploadError && <p className="text-sm text-clay">{uploadError}</p>}
+            {uploadError && <p className="text-sm text-[#a03d2c]">{uploadError}</p>}
 
             <div className="flex flex-wrap items-end gap-2">
               <label className="min-w-0 flex-1">
-                <span className="text-xs uppercase tracking-[0.14em] text-muted">Or add by URL</span>
+                <span className="a-label">Or add by URL</span>
                 <input
                   value={urlDraft}
                   onChange={(event) => setUrlDraft(event.target.value)}
-                  className="field mt-2"
+                  className="field mt-1.5"
                   placeholder="https://… or /products/name.avif"
                   spellCheck={false}
                 />
               </label>
-              <button type="button" onClick={addUrl} className="btn-outline">
+              <button type="button" onClick={addUrl} className="a-btn a-btn-secondary">
                 Add
               </button>
             </div>
           </Section>
         </div>
 
-        <div className="space-y-6">
+        <div className="min-w-0 space-y-5">
           <Section title="Price & making">
             <Field label="Price (PKR)" hint="Whole rupees, no decimals.">
               <input
@@ -369,7 +372,7 @@ export function ProductForm({
                 step={1}
                 required
                 defaultValue={product?.price}
-                className="field mt-2 tabular-nums"
+                className="field mt-1.5 tabular-nums"
               />
             </Field>
 
@@ -381,12 +384,12 @@ export function ProductForm({
                 max={52}
                 step={1}
                 defaultValue={product?.leadTimeWeeks ?? 4}
-                className="field mt-2 tabular-nums"
+                className="field mt-1.5 tabular-nums"
               />
             </Field>
 
             <Field label="Shape" hint="Used by the drawn placeholder before photography exists.">
-              <select name="glyph" defaultValue={product?.glyph ?? "object"} className="field mt-2">
+              <select name="glyph" defaultValue={product?.glyph ?? "object"} className="field mt-1.5">
                 {glyphOptions.map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label}
@@ -396,7 +399,7 @@ export function ProductForm({
             </Field>
 
             <fieldset>
-              <legend className="text-xs uppercase tracking-[0.14em] text-muted">For</legend>
+              <legend className="a-label">For</legend>
               <div className="mt-2 flex gap-5 text-sm">
                 <label className="flex items-center gap-2">
                   <input
@@ -404,7 +407,7 @@ export function ProductForm({
                     name="surface"
                     value="home"
                     defaultChecked={product ? product.surfaces.includes("home") : true}
-                    className="h-4 w-4 accent-pine"
+                    className="h-4 w-4"
                   />
                   Home
                 </label>
@@ -414,7 +417,7 @@ export function ProductForm({
                     name="surface"
                     value="office"
                     defaultChecked={product?.surfaces.includes("office")}
-                    className="h-4 w-4 accent-pine"
+                    className="h-4 w-4"
                   />
                   Office
                 </label>
@@ -428,11 +431,11 @@ export function ProductForm({
                 type="checkbox"
                 name="published"
                 defaultChecked={product ? product.published : true}
-                className="mt-0.5 h-4 w-4 accent-pine"
+                className="mt-0.5 h-4 w-4"
               />
               <span>
                 Live on the shop
-                <span className="mt-0.5 block text-xs text-muted">
+                <span className="mt-0.5 block text-[11px] text-[#657069]">
                   Off keeps it a draft only you can see.
                 </span>
               </span>
@@ -443,12 +446,12 @@ export function ProductForm({
                 type="checkbox"
                 name="featured"
                 defaultChecked={product?.featured}
-                className="mt-0.5 h-4 w-4 accent-pine"
+                className="mt-0.5 h-4 w-4"
               />
               <span>
                 Feature on the home page
-                <span className="mt-0.5 block text-xs text-muted">
-                  One piece at a time. The first featured piece wins.
+                <span className="mt-0.5 block text-[11px] text-[#657069]">
+                  One at a time. The first featured product wins.
                 </span>
               </span>
             </label>
@@ -460,16 +463,20 @@ export function ProductForm({
                 min={0}
                 step={1}
                 defaultValue={product?.position ?? 0}
-                className="field mt-2 tabular-nums"
+                className="field mt-1.5 tabular-nums"
               />
             </Field>
           </Section>
 
-          <div className="space-y-3">
-            <button type="submit" disabled={pending || uploading} className="btn-primary w-full">
+          <div className="space-y-2">
+            <button
+              type="submit"
+              disabled={pending || uploading}
+              className="a-btn a-btn-primary w-full"
+            >
               {pending ? "Saving…" : submitLabel}
             </button>
-            <Link href="/admin/products" className="btn-quiet w-full">
+            <Link href="/admin/products" className="a-btn a-btn-quiet w-full">
               Back to products
             </Link>
           </div>

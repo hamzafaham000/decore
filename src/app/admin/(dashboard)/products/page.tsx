@@ -44,32 +44,28 @@ export default async function ProductsPage({
   const counts: Record<string, number> = { all: live + drafts, live, draft: drafts };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <PageHeader
         title="Products"
         description="Everything in the shop. Changes appear on the storefront straight away."
         action={
-          <Link href="/admin/products/new" className="btn-primary">
-            Add a piece
+          <Link href="/admin/products/new" className="a-btn a-btn-primary">
+            Add product
           </Link>
         }
       />
 
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="a-segment">
         {filters.map((filter) => {
           const active = status === filter.value;
           return (
             <Link
               key={filter.value}
               href={filter.value === "all" ? "/admin/products" : `/admin/products?status=${filter.value}`}
-              className={`rounded-full px-3.5 py-2 text-xs transition-colors ${
-                active
-                  ? "bg-pine text-canvas"
-                  : "border border-line text-muted hover:border-ink/30 hover:text-ink"
-              }`}
+              aria-current={active ? "page" : undefined}
             >
               {filter.label}
-              <span className={`ml-2 tabular-nums ${active ? "text-canvas/60" : "text-muted/70"}`}>
+              <span className={`tabular-nums ${active ? "opacity-55" : "opacity-70"}`}>
                 {counts[filter.value]}
               </span>
             </Link>
@@ -81,33 +77,33 @@ export default async function ProductsPage({
         {products.length === 0 ? (
           <Empty>
             {status === "draft"
-              ? "No drafts. Every piece is live."
-              : "Nothing here yet. Add the first piece."}
+              ? "No drafts. Every product is live."
+              : "Nothing here yet. Add the first product."}
           </Empty>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[44rem] text-left text-sm">
+            <table className="a-table min-w-[46rem]">
               <thead>
-                <tr className="border-b border-line text-xs uppercase tracking-[0.12em] text-muted">
-                  <th className="px-5 py-3 font-medium">Piece</th>
-                  <th className="px-3 py-3 font-medium">Category</th>
-                  <th className="px-3 py-3 text-right font-medium">Price</th>
-                  <th className="px-3 py-3 font-medium">Status</th>
-                  <th className="px-3 py-3 font-medium">Updated</th>
-                  <th className="px-5 py-3 text-right font-medium">Actions</th>
+                <tr>
+                  <th>Product</th>
+                  <th>Category</th>
+                  <th className="num">Price</th>
+                  <th>Status</th>
+                  <th>Updated</th>
+                  <th className="num">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-line">
+              <tbody>
                 {products.map((product) => (
-                  <tr key={product.id} className="transition-colors hover:bg-ink/[0.02]">
-                    <td className="px-5 py-3">
+                  <tr key={product.id}>
+                    <td>
                       <Link
                         href={`/admin/products/${product.id}`}
                         className="flex items-center gap-3"
                       >
                         <span
                           aria-hidden
-                          className="h-11 w-11 shrink-0 rounded-lg border border-line bg-canvas bg-cover bg-center"
+                          className="h-9 w-9 shrink-0 rounded-md border border-[#e2e7e3] bg-[#f3f5f3] bg-cover bg-center"
                           style={
                             product.images[0]
                               ? {
@@ -118,45 +114,36 @@ export default async function ProductsPage({
                         />
                         <span className="min-w-0">
                           <span className="block truncate font-medium">{product.name}</span>
-                          <span className="block truncate text-xs text-muted">
+                          <span className="a-code block truncate text-[#657069]">
                             /{product.slug}
                           </span>
                         </span>
                       </Link>
                     </td>
-                    <td className="px-3 py-3 text-muted">{product.category.label}</td>
-                    <td className="px-3 py-3 text-right tabular-nums">
-                      {formatPKR(product.price)}
-                    </td>
-                    <td className="px-3 py-3">
-                      <span
-                        className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-medium ${
-                          product.published ? "bg-pine-soft text-pine" : "bg-line text-muted"
-                        }`}
-                      >
+                    <td className="text-[#5e6963]">{product.category.label}</td>
+                    <td className="num">{formatPKR(product.price)}</td>
+                    <td>
+                      <span className={product.published ? "a-pill a-pill-ok" : "a-pill a-pill-neutral"}>
                         {product.published ? "Live" : "Draft"}
                       </span>
                       {product.featured && (
-                        <span className="ml-1.5 text-[11px] text-clay">Featured</span>
+                        <span className="ml-1.5 text-[10px] font-medium text-[#a9543a]">
+                          Featured
+                        </span>
                       )}
                     </td>
-                    <td className="px-3 py-3 text-xs text-muted">
-                      {formatDate(product.updatedAt)}
-                    </td>
-                    <td className="px-5 py-3">
-                      <div className="flex items-center justify-end gap-3">
+                    <td className="text-xs text-[#657069]">{formatDate(product.updatedAt)}</td>
+                    <td>
+                      <div className="flex items-center justify-end gap-1.5">
                         <form action={setPublished}>
                           <input type="hidden" name="id" value={product.id} />
-                          <button
-                            type="submit"
-                            className="text-xs text-muted underline-offset-4 hover:text-ink hover:underline"
-                          >
+                          <button type="submit" className="a-btn a-btn-quiet a-btn-sm">
                             {product.published ? "Unpublish" : "Publish"}
                           </button>
                         </form>
                         <Link
                           href={`/admin/products/${product.id}`}
-                          className="text-xs font-medium underline-offset-4 hover:underline"
+                          className="a-btn a-btn-secondary a-btn-sm"
                         >
                           Edit
                         </Link>

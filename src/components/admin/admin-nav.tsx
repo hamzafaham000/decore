@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { BagIcon, CardIcon, GridIcon, SparkIcon } from "@/components/icons";
+
 const links = [
-  { href: "/admin", label: "Overview" },
-  { href: "/admin/products", label: "Products" },
-  { href: "/admin/orders", label: "Orders" },
-  { href: "/admin/analytics", label: "Traffic" },
+  { href: "/admin", label: "Overview", icon: GridIcon },
+  { href: "/admin/products", label: "Products", icon: BagIcon },
+  { href: "/admin/orders", label: "Orders", icon: CardIcon },
+  { href: "/admin/analytics", label: "Traffic", icon: SparkIcon },
 ];
 
 export function AdminNav({ horizontal = false }: { horizontal?: boolean }) {
@@ -16,11 +18,7 @@ export function AdminNav({ horizontal = false }: { horizontal?: boolean }) {
   return (
     <nav
       aria-label="Dashboard"
-      className={
-        horizontal
-          ? "flex gap-1 overflow-x-auto"
-          : "flex flex-col gap-1"
-      }
+      className={horizontal ? "flex gap-1 overflow-x-auto" : "a-nav"}
     >
       {links.map((link) => {
         const active =
@@ -28,17 +26,16 @@ export function AdminNav({ horizontal = false }: { horizontal?: boolean }) {
             ? pathname === "/admin"
             : pathname === link.href || pathname.startsWith(`${link.href}/`);
 
+        const Icon = link.icon;
+
         return (
           <Link
             key={link.href}
             href={link.href}
             aria-current={active ? "page" : undefined}
-            className={`whitespace-nowrap rounded-full px-3.5 py-2 text-sm transition-colors ${
-              active
-                ? "bg-pine text-canvas"
-                : "text-muted hover:bg-ink/[0.05] hover:text-ink"
-            }`}
+            className={horizontal ? "a-mobile-tab" : "a-nav-link"}
           >
+            <Icon />
             {link.label}
           </Link>
         );

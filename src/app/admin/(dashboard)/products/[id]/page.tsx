@@ -11,7 +11,7 @@ import { prisma } from "@/lib/db";
 import { deleteProduct, updateProduct } from "../actions";
 import { ProductForm } from "../product-form";
 
-export const metadata = { title: "Edit piece" };
+export const metadata = { title: "Edit product" };
 
 export const instant = false;
 
@@ -38,7 +38,7 @@ export default async function EditProductPage({
   if (!product) notFound();
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <PageHeader
         title={product.name}
         description={`Last saved ${new Intl.DateTimeFormat("en-PK", {
@@ -52,15 +52,13 @@ export default async function EditProductPage({
             <Link
               href={`/product/${product.slug}`}
               target="_blank"
-              className="btn-outline"
+              className="a-btn a-btn-secondary"
             >
               View on shop
               <ArrowUpRightIcon className="h-4 w-4" />
             </Link>
           ) : (
-            <span className="rounded-full bg-line px-3.5 py-2 text-xs text-muted">
-              Draft, not on the shop
-            </span>
+            <span className="a-pill a-pill-neutral">Draft, not on the shop</span>
           )
         }
       />
@@ -68,9 +66,9 @@ export default async function EditProductPage({
       {(notice.saved || notice.created) && (
         <p
           role="status"
-          className="rounded-xl border border-pine/20 bg-pine-soft px-4 py-3 text-sm text-pine"
+          className="rounded-lg border border-[#cfe0d7] bg-[#e8f0ec] px-4 py-3 text-sm text-[#1f513f]"
         >
-          {notice.created ? "Piece created." : "Changes saved."} The shop is up to date.
+          {notice.created ? "Product created." : "Changes saved."} The shop is up to date.
         </p>
       )}
 
@@ -102,19 +100,19 @@ export default async function EditProductPage({
         submitLabel="Save changes"
       />
 
-      <Panel title="Remove this piece" className="border-clay/25">
+      <Panel title="Remove this product" className="a-card-danger">
         <div className="flex flex-wrap items-center justify-between gap-4 px-5 py-4">
-          <p className="max-w-md text-xs leading-relaxed text-muted">
-            Deleting removes the piece from the shop and from every link to it. Orders already
+          <p className="max-w-md text-xs leading-relaxed text-[#5e6963]">
+            Deleting removes the product from the shop and from every link to it. Orders already
             placed keep their record.
           </p>
           <form action={deleteProduct}>
             <input type="hidden" name="id" value={product.id} />
             <ConfirmSubmit
               message={`Delete ${product.name}? This cannot be undone.`}
-              className="rounded-full border border-clay/40 px-4 py-2 text-xs font-medium text-clay transition-colors hover:bg-clay hover:text-canvas"
+              className="a-btn a-btn-danger"
             >
-              Delete piece
+              Delete product
             </ConfirmSubmit>
           </form>
         </div>

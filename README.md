@@ -125,6 +125,10 @@ Warm paper (`#f5f3ee`) and near-black ink, one deep pine accent and a clay tone 
 Serif for display type, Instrument Sans for everything else. Tokens, type utilities, buttons and
 fields live in `src/app/globals.css`; there are no per-page colour overrides.
 
+The dashboard at `/admin` runs its own visual system: Geist and Geist Mono, a dark rail, cool
+neutrals and compact controls. Those styles are scoped under `.admin-shell` and the `.a-*` utilities
+in the same stylesheet, so none of it reaches the shop.
+
 The interface keeps the catalogue photography low-resolution without hiding it: `ProductImage`
 accepts `framed`, which mats a piece inside a smaller centred frame instead of upscaling it across a
 full column, and `compact` for cart thumbnails.
