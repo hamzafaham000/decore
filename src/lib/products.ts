@@ -1,9 +1,51 @@
 export type Surface = "home" | "office";
 
+/**
+ * The shop splits by what a buyer actually calls the thing — chair, table,
+ * light, decor — not by a designer's "furniture and objects". Four flat
+ * categories, no parent tree: a parent page would repeat a filtered view and
+ * cost a click without adding a decision.
+ *
+ * Promote a line to a second level only when the catalogue passes ~40 pieces.
+ */
+export const categories = [
+  {
+    slug: "seating",
+    label: "Seating",
+    blurb: "Chairs, benches and stools built for long sittings.",
+    intro:
+      "Seating built to order in solid wood and hand-finished upholstery — lounge chairs, benches and stools for homes and offices across Pakistan. Every piece is made to your choice of finish and delivered in four to eight weeks.",
+  },
+  {
+    slug: "tables",
+    label: "Tables & Desks",
+    blurb: "Desks, consoles and side tables in solid hardwood.",
+    intro:
+      "Writing desks, consoles and side tables built to order from solid hardwood and finished by hand. Sized for real rooms — a study desk that fits a small wall, a console shallow enough for a hallway. Delivered across Pakistan in four to eight weeks.",
+  },
+  {
+    slug: "lighting",
+    label: "Lighting",
+    blurb: "Pendants, floor and table lamps in brass and wood.",
+    intro:
+      "Pendant, floor and table lamps made in brass, wood and handmade paper. Warm, low-glare light for reading corners, dining tables and desks. Wired for Pakistani mains and delivered across the country in four to eight weeks.",
+  },
+  {
+    slug: "decor",
+    label: "Decor",
+    blurb: "Sculptural pieces in marble, brass and wood.",
+    intro:
+      "Sculptural decor in marble, brass and solid wood — table pieces and small sculptures that hold a room together. Made to order in small batches and delivered across Pakistan in four to six weeks.",
+  },
+] as const;
+
+export type CategorySlug = (typeof categories)[number]["slug"];
+export type CategoryLabel = (typeof categories)[number]["label"];
+
 export type Product = {
   slug: string;
   name: string;
-  line: string;
+  line: CategoryLabel;
   surfaces: Surface[];
   price: number;
   tagline: string;
@@ -20,7 +62,7 @@ export type Product = {
    * A piece with only a cover shows no thumbnails at all.
    */
   images?: string[];
-  glyph: "seating" | "lighting" | "workspace" | "object";
+  glyph: "seating" | "table" | "lighting" | "workspace" | "object";
 };
 
 // Sample catalogue. Replace names, prices and copy with the real pieces —
@@ -54,7 +96,7 @@ export const products: Product[] = [
   {
     slug: "rivaan-writing-desk",
     name: "Rivaan Writing Desk",
-    line: "Workspace",
+    line: "Tables & Desks",
     surfaces: ["office"],
     price: 340_000,
     tagline: "One plane of wood, and a single quiet drawer.",
@@ -104,7 +146,7 @@ export const products: Product[] = [
   {
     slug: "panah-table-sculpture",
     name: "Panah Table Sculpture",
-    line: "Objects",
+    line: "Decor",
     surfaces: ["home", "office"],
     price: 58_000,
     tagline: "Two arms of cast stone, holding a single sphere of brass.",
@@ -130,7 +172,7 @@ export const products: Product[] = [
   {
     slug: "girih-linked-sculpture",
     name: "Girih Linked Sculpture",
-    line: "Objects",
+    line: "Decor",
     surfaces: ["home", "office"],
     price: 74_000,
     tagline: "Two rings that cannot come apart, joined in gold.",
@@ -156,7 +198,7 @@ export const products: Product[] = [
   {
     slug: "suhbat-stacked-sculpture",
     name: "Suhbat Stacked Sculpture",
-    line: "Objects",
+    line: "Decor",
     surfaces: ["home"],
     price: 128_000,
     tagline: "Three figures, each seated in a ring of black marble.",
@@ -179,6 +221,206 @@ export const products: Product[] = [
     image: "/products/suhbat-stacked-sculpture.avif",
     glyph: "object",
   },
+  {
+    slug: "dastur-armchair",
+    name: "Dastur Armchair",
+    line: "Seating",
+    surfaces: ["home", "office"],
+    price: 245_000,
+    tagline: "A high back and a caned frame, for the chair you read in.",
+    description:
+      "Dastur is a working chair that happens to be comfortable: a steam-bent ash frame, a hand-woven cane back, and a firm seat wrapped in cotton rather than foam that collapses in a year. The cane can be re-woven without touching the frame, which is the point of building it this way.",
+    finishes: ["Natural ash", "Ebonised ash", "Walnut stain"],
+    materials: [
+      { label: "Frame", value: "Steam-bent solid ash" },
+      { label: "Back", value: "Hand-woven cane" },
+      { label: "Seat", value: "Cotton over a firm foam core" },
+      { label: "Finish", value: "Hardwax oil, two coats" },
+    ],
+    dimensions: [
+      { label: "Width", value: "68 cm" },
+      { label: "Depth", value: "74 cm" },
+      { label: "Height", value: "92 cm" },
+      { label: "Seat height", value: "44 cm" },
+    ],
+    leadTimeWeeks: 7,
+    glyph: "seating",
+  },
+  {
+    slug: "takht-bench",
+    name: "Takht Bench",
+    line: "Seating",
+    surfaces: ["home"],
+    price: 165_000,
+    tagline: "A low bench with one thick rail, made to seat three.",
+    description:
+      "Takht is built like a table: a 45 mm sheesham top on four splayed legs, with nothing under your feet to catch a heel. The front edge is chamfered by hand so it does not cut into the back of a knee, and the whole thing is light enough for two people to move.",
+    finishes: ["Natural sheesham", "Smoked oak", "Painted bone"],
+    materials: [
+      { label: "Top", value: "Solid sheesham, 45 mm" },
+      { label: "Legs", value: "Tapered solid wood" },
+      { label: "Joinery", value: "Mortise and tenon, wedged" },
+      { label: "Finish", value: "Oil and wax" },
+    ],
+    dimensions: [
+      { label: "Length", value: "160 cm" },
+      { label: "Depth", value: "38 cm" },
+      { label: "Height", value: "45 cm" },
+      { label: "Weight", value: "18 kg" },
+    ],
+    leadTimeWeeks: 6,
+    glyph: "seating",
+  },
+  {
+    slug: "peerhi-stool",
+    name: "Peerhi Stool",
+    line: "Seating",
+    surfaces: ["home", "office"],
+    price: 48_000,
+    tagline: "The small stool every room needs and nobody photographs.",
+    description:
+      "Three legs, a woven seat, nothing else. Peerhi is cut from a single ash board and assembled with wedged tenons, so it takes weight without a stretcher across the middle. It tucks under a desk, carries a cup of tea, and stands in when the chairs run out.",
+    finishes: ["Natural ash", "Black", "Clay"],
+    materials: [
+      { label: "Seat", value: "Solid ash" },
+      { label: "Weave", value: "Cotton cord, hand-woven" },
+      { label: "Joints", value: "Wedged tenon" },
+      { label: "Finish", value: "Soap and wax" },
+    ],
+    dimensions: [
+      { label: "Width", value: "36 cm" },
+      { label: "Depth", value: "36 cm" },
+      { label: "Height", value: "45 cm" },
+      { label: "Weight", value: "3 kg" },
+    ],
+    leadTimeWeeks: 4,
+    glyph: "seating",
+  },
+  {
+    slug: "saraab-console",
+    name: "Saraab Console",
+    line: "Tables & Desks",
+    surfaces: ["home", "office"],
+    price: 275_000,
+    tagline: "A long, shallow table for the wall you keep looking at.",
+    description:
+      "Saraab is 32 cm deep, so it holds a lamp and a bowl without turning into a shelf for everything else. The top is book-matched walnut; the base is a single mitred plane that meets the floor on a shadow gap, which is why it reads lighter than it is.",
+    finishes: ["Natural walnut", "Ebonised ash", "Bone"],
+    materials: [
+      { label: "Top", value: "Book-matched walnut, 30 mm" },
+      { label: "Base", value: "Solid walnut, mitred" },
+      { label: "Shelf", value: "Walnut, 18 mm" },
+      { label: "Finish", value: "Hardwax oil, three coats" },
+    ],
+    dimensions: [
+      { label: "Length", value: "150 cm" },
+      { label: "Depth", value: "32 cm" },
+      { label: "Height", value: "78 cm" },
+      { label: "Weight", value: "26 kg" },
+    ],
+    leadTimeWeeks: 7,
+    glyph: "table",
+  },
+  {
+    slug: "chabutra-side-table",
+    name: "Chabutra Side Table",
+    line: "Tables & Desks",
+    surfaces: ["home", "office"],
+    price: 88_000,
+    tagline: "A small square that moves where the tea goes.",
+    description:
+      "A 45 cm top on an open frame, low enough to sit beside a lounge chair and light enough to lift with one hand. The top is a single solid slab with a soft roundover, so there is no edge to catch a sleeve.",
+    finishes: ["Sheesham", "Ash", "Blackened"],
+    materials: [
+      { label: "Top", value: "Solid sheesham, 28 mm" },
+      { label: "Frame", value: "Solid ash" },
+      { label: "Feet", value: "Felted" },
+      { label: "Finish", value: "Oil and wax" },
+    ],
+    dimensions: [
+      { label: "Width", value: "45 cm" },
+      { label: "Depth", value: "45 cm" },
+      { label: "Height", value: "52 cm" },
+      { label: "Weight", value: "6 kg" },
+    ],
+    leadTimeWeeks: 4,
+    glyph: "table",
+  },
+  {
+    slug: "davaat-bedside",
+    name: "Davaat Bedside",
+    line: "Tables & Desks",
+    surfaces: ["home"],
+    price: 78_000,
+    tagline: "One drawer, one shelf, no handles.",
+    description:
+      "Davaat is a bedside table with a push-to-open drawer and an open shelf for the book you are actually reading. The carcass is solid ash and the drawer front is a single piece with the finger pull cut into it, so nothing sticks out into a small room.",
+    finishes: ["Natural ash", "Walnut", "Bone"],
+    materials: [
+      { label: "Carcass", value: "Solid ash" },
+      { label: "Drawer", value: "Dovetailed, timber slides" },
+      { label: "Shelf", value: "Ash, 18 mm" },
+      { label: "Finish", value: "Soap and wax" },
+    ],
+    dimensions: [
+      { label: "Width", value: "42 cm" },
+      { label: "Depth", value: "38 cm" },
+      { label: "Height", value: "55 cm" },
+      { label: "Weight", value: "9 kg" },
+    ],
+    leadTimeWeeks: 5,
+    glyph: "table",
+  },
+  {
+    slug: "mahtab-floor-lamp",
+    name: "Mahtab Floor Lamp",
+    line: "Lighting",
+    surfaces: ["home", "office"],
+    price: 118_000,
+    tagline: "A tall stem and a paper shade that softens everything.",
+    description:
+      "Mahtab stands 158 cm and throws light up the wall rather than into your eyes, which is what a room wants after dark. The shade is handmade paper over a wire frame; the base is a weighted disc so it holds its place on a rug.",
+    finishes: ["Brass and ivory", "Black and oat", "Bronze and clay"],
+    materials: [
+      { label: "Stem", value: "Unlacquered brass" },
+      { label: "Shade", value: "Handmade paper on wire" },
+      { label: "Base", value: "Weighted steel disc" },
+      { label: "Flex", value: "Braided cotton, 2 m" },
+    ],
+    dimensions: [
+      { label: "Height", value: "158 cm" },
+      { label: "Shade", value: "Ø 42 cm" },
+      { label: "Base", value: "Ø 28 cm" },
+      { label: "Bulb", value: "E27, 12 W max" },
+    ],
+    leadTimeWeeks: 5,
+    glyph: "lighting",
+  },
+  {
+    slug: "chiragh-table-lamp",
+    name: "Chiragh Table Lamp",
+    line: "Lighting",
+    surfaces: ["office", "home"],
+    price: 64_000,
+    tagline: "A small brass lamp for a desk that has to work at night.",
+    description:
+      "Chiragh is 42 cm tall with a shade that tilts, so it lights the paper instead of the room. The switch is a brass toggle set into the base rather than a switch on the cable, and the flex is cotton over braided core.",
+    finishes: ["Raw brass", "Blackened brass", "Nickel"],
+    materials: [
+      { label: "Body", value: "Solid brass" },
+      { label: "Shade", value: "Spun brass" },
+      { label: "Switch", value: "Brass toggle, in base" },
+      { label: "Flex", value: "Braided cotton, 1.8 m" },
+    ],
+    dimensions: [
+      { label: "Height", value: "42 cm" },
+      { label: "Shade", value: "Ø 18 cm" },
+      { label: "Base", value: "Ø 14 cm" },
+      { label: "Bulb", value: "E14, 8 W max" },
+    ],
+    leadTimeWeeks: 4,
+    glyph: "lighting",
+  },
 ];
 
 export function getProduct(slug: string): Product | undefined {
@@ -188,4 +430,13 @@ export function getProduct(slug: string): Product | undefined {
 /** Every photograph for a piece, cover first. Empty when nothing is shot yet. */
 export function productImages(product: Pick<Product, "image" | "images">): string[] {
   return [...(product.image ? [product.image] : []), ...(product.images ?? [])];
+}
+
+export function getCategory(slug: string) {
+  return categories.find((category) => category.slug === slug);
+}
+
+export function productsInCategory(slug: CategorySlug): Product[] {
+  const label = getCategory(slug)?.label;
+  return label ? products.filter((product) => product.line === label) : [];
 }

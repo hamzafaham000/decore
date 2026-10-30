@@ -17,6 +17,13 @@ const glyphs = {
       <path d="M38 68h26v12H38z" />
     </>
   ),
+  table: (
+    <>
+      <path d="M18 48h84v10H18z" />
+      <path d="M28 58v34M92 58v34" />
+      <path d="M36 70h48v8H36z" />
+    </>
+  ),
   lighting: (
     <>
       <path d="M60 12v24" />

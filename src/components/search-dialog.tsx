@@ -326,7 +326,7 @@ export function SearchDialog({ index }: { index: SearchDoc[] }) {
                           onClick={closeDialog}
                           className="link-underline text-xs text-muted hover:text-ink"
                         >
-                          Browse the collection
+                          Browse the shop
                           <ArrowUpRightIcon className="h-3 w-3" />
                         </Link>
                       </div>

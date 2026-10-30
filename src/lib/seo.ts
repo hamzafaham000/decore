@@ -1,6 +1,6 @@
 import { brand, commerce } from "@/lib/brand";
 import { formatPKR } from "@/lib/money";
-import { productImages, type Product } from "@/lib/products";
+import { categories, productImages, type Product } from "@/lib/products";
 import { absoluteUrl, siteLanguage, siteUrl } from "@/lib/site";
 
 /**
@@ -20,7 +20,7 @@ export const siteOgImage = {
   url: "/opengraph-image",
   width: 1200,
   height: 630,
-  alt: "Decore — furniture and objects, made to order in Pakistan",
+  alt: "Decore — furniture and decor, made to order in Pakistan",
 };
 
 export function siteJsonLd() {
@@ -43,7 +43,7 @@ export function siteJsonLd() {
           "solid walnut furniture",
           "hand-raised brass lighting",
           "wool bouclé upholstery",
-          "home objects",
+          "home decor",
         ],
         contactPoint: [
           {
@@ -75,8 +75,12 @@ export function siteJsonLd() {
   };
 }
 
-export function productJsonLd(product: Product) {
-  const url = absoluteUrl(`/product/${product.slug}`);
+/** The shop category a piece belongs to, resolved from its display line. */
+export function categoryOf(product: Product) {
+  return categories.find((category) => category.label === product.line);
+}
+
+export function productJsonLd(product: Product) {  const url = absoluteUrl(`/product/${product.slug}`);
 
   return {
     "@context": "https://schema.org",
@@ -91,7 +95,7 @@ export function productJsonLd(product: Product) {
           ? { image: productImages(product).map(absoluteUrl) }
           : {}),
         brand: { "@type": "Brand", name: brand.name },
-        category: `${product.line} · furniture and objects`,
+        category: `${product.line} · furniture and decor`,
         material: product.materials
           .filter((material) => material.label !== "Care")
           .map((material) => material.value)
@@ -132,26 +136,47 @@ export function productJsonLd(product: Product) {
           {
             "@type": "ListItem",
             position: 2,
-            name: "Collection",
+            name: "Shop",
             item: absoluteUrl("/collection"),
           },
-          { "@type": "ListItem", position: 3, name: product.name, item: url },
+          ...(categoryOf(product)
+            ? [
+                {
+                  "@type": "ListItem",
+                  position: 3,
+                  name: categoryOf(product)!.label,
+                  item: absoluteUrl(`/collection/${categoryOf(product)!.slug}`),
+                },
+              ]
+            : []),
+          {
+            "@type": "ListItem",
+            position: categoryOf(product) ? 4 : 3,
+            name: product.name,
+            item: url,
+          },
         ],
       },
     ],
   };
 }
 
-export function collectionJsonLd(products: Product[]) {
-  const url = absoluteUrl("/collection");
+export function collectionJsonLd(
+  products: Product[],
+  options: { name?: string; description?: string; path?: string } = {},
+) {
+  const url = absoluteUrl(options.path ?? "/collection");
+  const name = options.name ?? "The Decore shop";
 
   return {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
     "@id": `${url}#collection`,
     url,
-    name: "The Decore collection",
-    description: `${products.length} furniture and home pieces, made to order in Pakistan and delivered nationwide.`,
+    name,
+    description:
+      options.description ??
+      `${products.length} furniture and home pieces, made to order in Pakistan and delivered nationwide.`,
     inLanguage: siteLanguage,
     isPartOf: { "@id": websiteId },
     mainEntity: {
@@ -167,8 +192,20 @@ export function collectionJsonLd(products: Product[]) {
   };
 }
 
-export type Faq = { title: string; content: string };
+export function breadcrumbJsonLd(items: { name: string; path: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      item: absoluteUrl(item.path),
+    })),
+  };
+}
 
+export type Faq = { title: string; content: string };
 function faqNode(faqs: Faq[]) {
   return {
     "@type": "FAQPage",
@@ -217,7 +254,7 @@ export const madeToOrderFaqs: Faq[] = [
   {
     title: "How long does a made-to-order piece take?",
     content:
-      "Four to eight weeks from the day we confirm the order. The exact window is on each product page: four weeks for lighting and objects, six for seating, eight for the writing desk.",
+      "Four to eight weeks from the day we confirm the order. The exact window is on each product page: four weeks for lighting and decor, six for seating, eight for the writing desk.",
   },
   {
     title: "Do you deliver across Pakistan?",

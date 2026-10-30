@@ -64,13 +64,13 @@ export default function Home() {
 
             <Reveal delay={0.12} className="mt-9 lg:mt-auto lg:pt-14">
               <p className="max-w-[42ch] text-base leading-relaxed text-muted md:text-lg">
-                Furniture and objects for work and rest — built to order in Pakistan, finished by
+                Furniture and decor for work and rest — built to order in Pakistan, finished by
                 hand.
               </p>
 
               <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-5">
                 <Link href="/collection" className="btn-primary">
-                  Explore the collection
+                  Explore the shop
                   <ArrowRightIcon className="h-4 w-4" />
                 </Link>
                 <a
@@ -97,20 +97,20 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Collection */}
+      {/* Shop */}
       <section className="page-shell py-20 md:py-28">
         <Reveal>
           <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
             <div>
               <p className="eyebrow text-muted">Selected pieces</p>
-              <h2 className="display-2 mt-4">The collection</h2>
+              <h2 className="display-2 mt-4">Start here</h2>
             </div>
             <div className="flex flex-col gap-4 md:items-end">
               <p className="max-w-[38ch] text-sm leading-relaxed text-muted md:text-right">
                 Built to order by workshops we visit in person.
               </p>
               <Link href="/collection" className="link-underline self-start md:self-end">
-                View the collection
+                See every piece
                 <ArrowUpRightIcon className="h-3.5 w-3.5" />
               </Link>
             </div>
@@ -135,7 +135,7 @@ export default function Home() {
               <h2 className="display-2 mt-4 max-w-[14ch]">The room comes first.</h2>
               <p className="mt-7 max-w-[42ch] leading-relaxed text-muted">
                 A room does not need many things. It needs the right ones, and room to breathe
-                around them. That is why the collection stays small and every piece is built only
+                around them. That is why the shop stays small and every piece is built only
                 once it has a home.
               </p>
               <Link href="/contact" className="link-underline mt-8">

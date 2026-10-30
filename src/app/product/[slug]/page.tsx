@@ -13,7 +13,7 @@ import { brand, commerce } from "@/lib/brand";
 import { formatPKR } from "@/lib/money";
 import { getProduct, products } from "@/lib/products";
 import type { Surface } from "@/lib/products";
-import { productJsonLd } from "@/lib/seo";
+import { productJsonLd, categoryOf } from "@/lib/seo";
 import { whatsappLink } from "@/lib/whatsapp";
 
 export function generateStaticParams() {
@@ -102,8 +102,19 @@ async function ProductDetail({ params }: { params: Promise<{ slug: string }> }) 
           </Link>
           <span aria-hidden>/</span>
           <Link href="/collection" className="transition-colors hover:text-ink">
-            Collection
+            Shop
           </Link>
+          {categoryOf(product) && (
+            <>
+              <span aria-hidden>/</span>
+              <Link
+                href={`/collection/${categoryOf(product)!.slug}`}
+                className="transition-colors hover:text-ink"
+              >
+                {categoryOf(product)!.label}
+              </Link>
+            </>
+          )}
           <span aria-hidden>/</span>
           <span className="text-ink">{product.name}</span>
         </nav>
@@ -213,7 +224,7 @@ async function ProductDetail({ params }: { params: Promise<{ slug: string }> }) 
           <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
             <div>
               <p className="eyebrow text-muted">Keep looking</p>
-              <h2 className="display-3 mt-3">More from the collection</h2>
+              <h2 className="display-3 mt-3">More from the shop</h2>
             </div>
             <Link href="/collection" className="link-underline self-start md:self-auto">
               View all pieces

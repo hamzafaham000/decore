@@ -227,7 +227,7 @@ async function Receipt({ reference }: { reference: string }) {
           className="inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-ink"
         >
           <ArrowRightIcon className="h-4 w-4 rotate-180" />
-          Back to the collection
+          Back to the shop
         </Link>
         <p className="text-xs text-muted">Keep this reference: {order.reference}</p>
       </div>

@@ -2,7 +2,7 @@ export const brand = {
   name: "Decore",
   tagline: "Considered pieces for work and rest.",
   description:
-    "Furniture and objects for work and rest, made to order in Pakistan. Solid walnut, hand-raised brass and wool bouclé, finished by hand.",
+    "Furniture and decor for work and rest, made to order in Pakistan. Solid walnut, hand-raised brass and wool bouclé, finished by hand.",
   email: "hello@decore.pk",
   /** Public display form. `whatsappLink` still builds the wa.me URL from the env var. */
   whatsapp: "+92 316 9650686",
@@ -22,7 +22,7 @@ export const commerce = {
 };
 
 export const nav = [
-  { href: "/collection", label: "Collection" },
+  { href: "/collection", label: "Shop" },
   { href: "/contact", label: "Contact" },
 ] as const;
 

@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 
 import { absoluteUrl } from "@/lib/site";
-import { products, productImages } from "@/lib/products";
+import { categories, products, productImages } from "@/lib/products";
 
 /**
  * `lastModified` is left out on purpose: the catalogue is code with no per-piece
@@ -14,6 +14,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const pages: MetadataRoute.Sitemap = [
     { url: absoluteUrl("/"), changeFrequency: "monthly", priority: 1 },
     { url: absoluteUrl("/collection"), changeFrequency: "monthly", priority: 0.9 },
+    ...categories.map((category) => ({
+      url: absoluteUrl(`/collection/${category.slug}`),
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    })),
     { url: absoluteUrl("/made-to-order"), changeFrequency: "yearly", priority: 0.8 },
     { url: absoluteUrl("/contact"), changeFrequency: "yearly", priority: 0.5 },
   ];

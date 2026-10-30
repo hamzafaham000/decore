@@ -1,6 +1,6 @@
 import { brand, commerce } from "@/lib/brand";
 import { formatPKR } from "@/lib/money";
-import { products } from "@/lib/products";
+import { categories, products } from "@/lib/products";
 import { madeToOrderFaqs } from "@/lib/seo";
 import { absoluteUrl } from "@/lib/site";
 
@@ -35,7 +35,7 @@ export function llmsIndex(): string {
     "",
     `> ${brand.description}`,
     "",
-    "Decore is a furniture and home-objects brand in Pakistan. The collection is deliberately short: seating, workspace, lighting and objects. Every piece is made to order, not held in stock.",
+    "Decore is a furniture and decor brand in Pakistan. The shop is deliberately short: seating, tables and desks, lighting and decor. Every piece is made to order, not held in stock.",
     "",
     "## Key facts",
     "",
@@ -48,7 +48,11 @@ export function llmsIndex(): string {
     "",
     "## Pages",
     "",
-    `- [Collection](${absoluteUrl("/collection")}): all pieces, prices and lead times.`,
+    `- [Shop](${absoluteUrl("/collection")}): all pieces, prices and lead times.`,
+    ...categories.map(
+      (category) =>
+        `- [${category.label}](${absoluteUrl(`/collection/${category.slug}`)}): ${category.blurb}`,
+    ),
     `- [Made to order](${absoluteUrl("/made-to-order")}): the process, timeline, payment and delivery.`,
     `- [Contact](${absoluteUrl("/contact")}): WhatsApp, email and frequently asked questions.`,
     "",
@@ -87,7 +91,7 @@ export function llmsFull(): string {
     "- Lead time runs from confirmation, not from the online order.",
     "- Pieces can be cancelled without charge before the workshop cuts the timber.",
     "- Finish samples can be arranged by appointment before the build.",
-    "- The collection is not custom-sized; dimensions on each product page are final.",
+    "- Pieces are not custom-sized; dimensions on each product page are final.",
     "",
     "## Questions and answers",
     "",

@@ -40,12 +40,12 @@ export default async function OpengraphImage({
           }}
         >
           <div style={{ display: "flex" }}>Decore</div>
-          <div style={{ display: "flex" }}>{product?.line ?? "Collection"}</div>
+          <div style={{ display: "flex" }}>{product?.line ?? "Shop"}</div>
         </div>
 
         <div style={{ display: "flex", flexDirection: "column" }}>
           <div style={{ fontSize: 70, lineHeight: 1.05, letterSpacing: -2, fontWeight: 500 }}>
-            {product?.name ?? "The collection"}
+            {product?.name ?? "The shop"}
           </div>
           {product && (
             <div style={{ marginTop: 22, fontSize: 28, color: "#6f6a61", maxWidth: 900 }}>

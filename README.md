@@ -1,10 +1,10 @@
 # Decore
 
-A storefront for a short collection of office and home pieces. Next.js 16 (App Router,
+A storefront for a short shop of office and home pieces. Next.js 16 (App Router,
 Cache Components), Tailwind 4, Postgres via Prisma 7.
 
-Launch state: six pieces in the collection, three of them photographed, plus a cart and a
-checkout that records real orders. Card payments are **not** wired to a gateway yet — see
+Launch state: fourteen pieces across four categories — seating, tables and desks, lighting
+and decor — three of them photographed, plus a cart and a checkout that records real orders. Card payments are **not** wired to a gateway yet — see
 [Payments](#payments).
 
 ## Run it
@@ -58,6 +58,7 @@ run `pnpm prisma migrate deploy` once before the first real order.
 | Delivery fee, free-delivery threshold, advance % | `commerce` in `src/lib/brand.ts` |
 | The products themselves | `src/lib/products.ts` |
 | Product photography | `public/products/`, then set `image` per product |
+| Extra angles for a piece | `images` on the product — one line per photo |
 | Page measure, action appearance | `page-shell`, `btn-primary`, `btn-outline` in `src/app/globals.css` |
 | Public origin for canonicals, sitemap and structured data | `SITE_URL` in `.env` |
 
@@ -68,7 +69,17 @@ checkout summary, and the order API read from it. Adding a piece means adding on
 Until a product has an `image`, it renders a drawn placeholder from `ProductImage`. That is
 deliberate: drop the file in, set the path, and the placeholder disappears.
 
-Three pieces have photography, all in the Objects line: `panah-table-sculpture.avif` (300 × 300),
+`image` is the cover. Add `images: [...]` for extra views and the detail page grows a thumbnail
+strip — vertical beside the image on desktop so it stays above the fold, horizontal under it on
+phones. A piece with only a cover renders exactly as before, with no empty frame. JSON-LD and the
+sitemap emit every photo, not just the cover.
+
+Categories live in the same file: four flat entries — Seating, Tables & Desks, Lighting, Decor —
+each with a slug, label, blurb and intro. A product's `line` is one of those labels, and the
+`/collection/[category]` route is generated from the list. A piece counts toward a category by
+matching its `line`; there is no second level and no parent "Furniture" page.
+
+Three pieces have photography, all in the Decor line: `panah-table-sculpture.avif` (300 × 300),
 `girih-linked-sculpture.avif` (300 × 300) and `suhbat-stacked-sculpture.avif` (584 × 731 — the
 original was 419 wide, too narrow for a 4:5 slot, so it was extended left and right onto a blurred
 copy of itself rather than cropped).
@@ -91,7 +102,7 @@ full column, and `compact` for cart thumbnails.
 
 ## Home page
 
-Hero with the interactive lookbook → the whole collection → our approach →
+Hero with the interactive lookbook → a selection from the shop → our approach →
 a pine featured-piece band → the closing invitation.
 
 The hero pairs the statement with a stage showing the three photographed pieces. Thumbnails switch
@@ -103,13 +114,14 @@ All of the copy, prices and images render on the server. The client components o
 `Reveal` (a fade and rise as each block enters view), `HeroShowcase`, the header (which carries the
 search dialog), and the cart drawer.
 
-The home page states no product counts — not in the hero, not beside “The collection”, and not in
+The home page states no product counts — not in the hero, not beside “Start here”, and not in
 the closing link. The lead-time window is the only number it asserts. Delivery and advance terms
 live where they change a decision — the product accordion, the cart, and the checkout summary.
 
-The collection page adds a sticky browser that filters by line and by room. Filters are client state,
-so every piece is still in the prerendered HTML and crawlable; `?line=` deep links are not supported
-yet.
+The shop page adds a sticky toolbar. Category chips are real links to `/collection/seating`,
+`/collection/tables`, `/collection/lighting` and `/collection/decor`, so they are crawlable; Room
+and Price are client-side filters over the prerendered grid. A category page reuses the same
+toolbar with its own chip marked current. `?room=` deep links are not supported yet.
 
 ## Search
 
@@ -118,7 +130,7 @@ filter as you type and are keyboard-navigable: `↑` `↓` to move, `Enter` to o
 Focus is trapped while it is open and returned to the trigger on close, and the page behind is
 scroll-locked.
 
-The index is built on the server in `src/lib/search-index.ts` — six compact records of name, line,
+The index is built on the server in `src/lib/search-index.ts` — fourteen compact records of name, line,
 tagline, finishes, materials and rooms — and passed into the header, so the long product
 descriptions never reach the browser. Matching lives in `src/lib/search.ts`: accents and punctuation
 are normalised, every word must match, and fields are weighted name > line > tagline >
@@ -133,7 +145,7 @@ client-rendered, so it adds nothing to the static HTML or to SEO.
 Where this kind of page normally puts a discount badge or a struck-through price, there is none —
 nothing here is marked down, rated, or labelled new, and the honest substitutes are the lead time,
 the price, and the advance/balance split. `product.line` is printed as a label on each card and on
-the detail page, and the collection browser is the one place it becomes a filter.
+the detail page, and the shop toolbar is the one place it becomes a filter.
 
 ## Orders
 
@@ -193,8 +205,8 @@ Unset it falls back to `http://localhost:3000` in development and `https://decor
 so a forgotten variable cannot publish localhost canonicals.
 
 Every route has its own title, description, canonical and `og:url`; there are no template-generated
-duplicates. The home page, collection, made-to-order, contact and each of the six pieces were checked
-in the served HTML.
+duplicates. The home page, shop, the four category pages, made-to-order, contact and each of the
+fourteen pieces were checked in the served HTML.
 
 **Social cards.** `app/opengraph-image.tsx` and `app/product/[slug]/opengraph-image.tsx` render
 1200 × 630 PNGs with `next/og` — one store card and one per piece, carrying the name, tagline, price
@@ -210,11 +222,13 @@ it.
 - `Product` + `BreadcrumbList` on each piece: absolute image when one exists, `PKR` price,
   `MadeToOrder` availability, material, dimensions and finishes as `PropertyValue`s, seller and
   `areaServed` on the offer, and the piece's own lead time.
-- `CollectionPage` + `ItemList` on `/collection`, listing every piece in catalogue order.
+- `CollectionPage` + `ItemList` on `/collection` and on each of the four category pages, listing
+the pieces in that category. Category pages also carry a `BreadcrumbList`, and product breadcrumbs
+run Home → Shop → Category → piece.
 - `WebPage` + `FAQPage` on `/made-to-order`, and `FAQPage` on `/contact` for the visible accordion.
 
-**Crawl surfaces.** `app/sitemap.ts` lists all ten URLs, with `<image:image>` entries for the three
-photographed pieces. `app/robots.ts` allows the catalogue and disallows `/checkout`, `/order` and
+**Crawl surfaces.** `app/sitemap.ts` lists all 22 URLs — eight pages and fourteen pieces — with
+`<image:image>` entries for the three photographed pieces. `app/robots.ts` allows the catalogue and disallows `/checkout`, `/order` and
 `/api`, then repeats that group by name for `GPTBot`, `OAI-SearchBot`, `ChatGPT-User`,
 `PerplexityBot`, `Perplexity-User`, `ClaudeBot`, `Claude-User`, `Claude-SearchBot`,
 `Google-Extended`, `Applebot-Extended`, `Bingbot` and `CCBot`. `*` already covers them; the named
@@ -237,10 +251,10 @@ The `/made-to-order` page is the citable hub for process questions: lead time, a
 finish samples and cancellation, all on one URL with the FAQ marked up. Product delivery accordions
 link to it rather than repeating the whole policy.
 
-Two limits worth naming. Client-side filters on `/collection` do not create crawlable category URLs,
-so there is no landing page for “office furniture” or “walnut desk” yet. And three of the six pieces
-have no photograph, so they cannot earn Google Images or merchant-listing visibility. Both are
-business inputs, not code gaps.
+Two limits worth naming. Room and Price remain client-side filters, so there is no crawlable
+landing page for “office furniture” or a price band yet; only the four categories are URLs. And
+eleven of the fourteen pieces have no photograph, so they cannot earn Google Images or
+merchant-listing visibility. Both are business inputs, not code gaps.
 
 ## Verified
 
@@ -255,22 +269,27 @@ business inputs, not code gaps.
   served HTML carries the new hero with none of the four figures that used to sit under it.
 - `pnpm build` now emits `/robots.txt` and `/sitemap.xml`, plus `/llms.txt` and `/llms-full.txt`.
   Served `robots.txt` carries the three disallows, the sitemap line and the named AI-crawler groups;
-  `sitemap.xml` lists ten URLs and `<image:image>` for the three photographed pieces. Canonicals,
+  `sitemap.xml` lists 22 URLs and `<image:image>` for the three photographed pieces. Canonicals,
   `og:url` and `og:image` appear on `/`, `/collection`, `/made-to-order`, `/contact` and every
   product page; `/checkout` and a real receipt both return `noindex`.
 - Every JSON-LD block parses. The graph carries `Organization` and `WebSite` sitewide,
-  `Product` + `BreadcrumbList` per piece, `CollectionPage` + `ItemList` on `/collection`, and
-  `WebPage` + `FAQPage` on `/made-to-order`. The product offer states `PKR`, the catalogue price,
+  `Product` + `BreadcrumbList` per piece, `CollectionPage` + `ItemList` on `/collection` and on
+  each category page (which also carry a `BreadcrumbList`), and `WebPage` + `FAQPage` on
+  `/made-to-order`. The product offer states `PKR`, the catalogue price,
   `MadeToOrder`, the seller and the piece's own lead time, with no unescaped `<`.
-- Lighthouse (accessibility, best practices, SEO) scores 100 on `/`, `/collection`, both a
-  photographed and an unphotographed product, `/contact` and `/made-to-order`, with no failing
-  audits.
-- Site and per-product Open Graph images render as 1200 × 630 PNGs, and the six product cards are
-  byte-different from each other.
+- Lighthouse (accessibility, best practices, SEO) scored 100 on `/`, `/collection`, both a
+  photographed and an unphotographed product, `/contact` and `/made-to-order` at the last full audit,
+  with no failing audits. It has not been re-run since the shop split.
+- Site and per-product Open Graph images render as 1200 × 630 PNGs, and the fourteen product cards
+  are byte-different from each other.
 - The free-delivery nudge and the advance rows exist in the cart drawer's client chunk, and the
   build window appears in a real receipt's HTML and in its WhatsApp handoff.
 - Quantities above `commerce.maxQuantity` are rejected by the API, and the cart clamps to the
   same number, so the browser cannot build an order the server refuses.
+- The shop serves `/collection` plus `/collection/seating`, `/tables`, `/lighting` and `/decor`.
+  Chips, Room and Price were exercised at 390 and 1280: 14 pieces → 7 (Home, under 100k) → 14 on
+  clear, with the count matching the rendered cards and no horizontal overflow. The sticky toolbar
+  measures 122 px at both widths, and an unknown slug returns 404.
 
 ## Not verified
 
@@ -283,7 +302,7 @@ business inputs, not code gaps.
   chunk, not by interaction.
 - The structured data was checked by parsing it locally. It has not been through Google's
   rich results test, and nothing here proves a crawler agrees.
-- The mobile menu has been opened and closed at 390 px: it lists Collection, Contact and WhatsApp,
+- The mobile menu has been opened and closed at 390 px: it lists Shop, Contact and WhatsApp,
   and the page behind does not overflow. Its scroll lock and Escape-to-close were not separately
   asserted.
 - No real card is charged, and no gateway webhook exists.

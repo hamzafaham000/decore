@@ -27,7 +27,7 @@ const serif = Instrument_Serif({
   display: "swap",
 });
 
-const homeTitle = `${brand.name} — Furniture & objects, made to order in Pakistan`;
+const homeTitle = `${brand.name} — Furniture & decor, made to order in Pakistan`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

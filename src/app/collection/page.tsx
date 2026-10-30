@@ -11,19 +11,19 @@ import { collectionJsonLd, siteOgImage } from "@/lib/seo";
 import { whatsappLink } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
-  title: { absolute: `Collection — Furniture made to order in Pakistan | ${brand.name}` },
-  description: `${products.length} pieces for the office and the home — seating, desks, lighting and objects. Made to order in four to eight weeks and delivered across Pakistan.`,
+  title: { absolute: `Shop — furniture and decor made to order in Pakistan | ${brand.name}` },
+  description: `${products.length} pieces for the office and the home — seating, tables, lighting and decor. Made to order in four to eight weeks and delivered across Pakistan.`,
   alternates: { canonical: "/collection" },
   openGraph: {
     type: "website",
     url: "/collection",
-    title: `The collection — made to order in Pakistan | ${brand.name}`,
+    title: `Shop — made to order in Pakistan | ${brand.name}`,
     description: `${products.length} pieces for the office and the home, made to order in four to eight weeks and delivered across Pakistan.`,
     images: [siteOgImage],
   },
   twitter: {
     card: "summary_large_image",
-    title: `The collection — made to order in Pakistan | ${brand.name}`,
+    title: `Shop — made to order in Pakistan | ${brand.name}`,
     description: `${products.length} pieces for the office and the home, delivered across Pakistan.`,
   },
 };
@@ -31,22 +31,23 @@ export const metadata: Metadata = {
 export default function CollectionPage() {
   return (
     <div className="pb-4">
-      <JsonLd data={collectionJsonLd(products)} />
+      <JsonLd data={collectionJsonLd(products, { name: "The Decore shop" })} />
       <header className="page-shell pb-12 pt-10 md:pb-16 md:pt-16">
         <div className="grid items-end gap-10 border-b border-line pb-12 lg:grid-cols-12 lg:gap-12">
           <div className="lg:col-span-8">
             <Reveal>
               <p className="eyebrow flex items-center gap-3 text-muted">
                 <span className="h-px w-8 bg-muted/50" />
-                Office &amp; home
+                Shop · Office &amp; home
               </p>
-              <h1 className="display-1 mt-7">The collection</h1>
+              <h1 className="display-1 mt-7">Every piece</h1>
             </Reveal>
           </div>
 
           <Reveal delay={0.08} className="lg:col-span-4">
             <p className="max-w-[42ch] leading-relaxed text-muted">
-              A short list, built to order by workshops we visit in person.
+              A short list, built to order by workshops we visit in person — seating, tables,
+              lighting and decor.
             </p>
           </Reveal>
         </div>

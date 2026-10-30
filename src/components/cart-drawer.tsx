@@ -100,7 +100,7 @@ export function CartDrawer() {
                   Every piece is made to order, and the list stays short.
                 </p>
                 <Link href="/collection" onClick={closeCart} className="btn-primary mt-7">
-                  Browse the collection
+                  Browse the shop
                 </Link>
               </div>
             ) : (

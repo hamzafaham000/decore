@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Decore — furniture and objects, made to order in Pakistan";
+export const alt = "Decore — furniture and decor, made to order in Pakistan";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -51,7 +51,7 @@ export default function OpengraphImage() {
             made properly.
           </div>
           <div style={{ marginTop: 30, fontSize: 27, color: "#6f6a61" }}>
-            Furniture and objects, made to order in Pakistan.
+            Furniture and decor, made to order in Pakistan.
           </div>
         </div>
 

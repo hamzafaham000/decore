@@ -141,7 +141,7 @@ export function CheckoutForm() {
           Your bag is empty. Choose a piece and it will appear here when you are ready.
         </p>
         <Link href="/collection" className="btn-primary mt-7">
-          Browse the collection
+          Browse the shop
         </Link>
       </div>
     );
@@ -158,7 +158,7 @@ export function CheckoutForm() {
         </Link>
         <span aria-hidden>/</span>
         <Link href="/collection" className="transition-colors hover:text-ink">
-          Collection
+          Shop
         </Link>
         <span aria-hidden>/</span>
         <span className="text-ink">Checkout</span>

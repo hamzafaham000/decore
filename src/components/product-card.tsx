@@ -16,7 +16,7 @@ export function ProductCard({
   index?: number;
   priority?: boolean;
   sizes?: string;
-  /** Cards sit under an h1 on the collection page, so they use h2 there. */
+  /** Cards sit under an h1 on the shop page, so they use h2 there. */
   headingLevel?: "h2" | "h3";
 }) {
   const Heading = headingLevel;

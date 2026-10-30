@@ -12,11 +12,11 @@ export default function NotFound() {
         <em className="text-pine">left the room.</em>
       </h1>
       <p className="mt-6 max-w-[42ch] leading-relaxed text-muted">
-        The piece may have moved, or the link may be old. The collection is still here.
+        The piece may have moved, or the link may be old. The shop is still here.
       </p>
       <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4">
         <Link href="/collection" className="btn-primary">
-          Browse the collection
+          Browse the shop
           <ArrowRightIcon className="h-4 w-4" />
         </Link>
         <Link href="/" className="link-underline">

@@ -105,7 +105,7 @@ export default function MadeToOrderPage() {
 
         <Reveal delay={0.08} className="lg:col-span-5">
           <p className="max-w-[42ch] leading-relaxed text-muted">
-            Decore keeps a short collection and builds each piece once it is ordered. Nothing is
+            Decore keeps a short list and builds each piece once it is ordered. Nothing is
             held in a warehouse, so the timber, the brass and the finish are chosen for your piece.
           </p>
         </Reveal>
@@ -188,7 +188,7 @@ export default function MadeToOrderPage() {
                 WhatsApp
               </a>
               <Link href="/collection" className="btn-outline">
-                See the collection
+                See the shop
                 <ArrowRightIcon className="h-4 w-4" />
               </Link>
             </div>

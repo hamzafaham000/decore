@@ -1,7 +1,8 @@
 import Link from "next/link";
 
 import { ArrowUpRightIcon, ChatIcon, MailIcon } from "@/components/icons";
-import { brand, commerce, nav } from "@/lib/brand";
+import { brand, commerce } from "@/lib/brand";
+import { categories } from "@/lib/products";
 import { formatPKR } from "@/lib/money";
 import { whatsappLink } from "@/lib/whatsapp";
 
@@ -9,13 +10,13 @@ export function Footer() {
   return (
     <footer className="mt-24 bg-ink text-canvas">
       <div className="page-shell grid gap-14 py-16 md:grid-cols-12 md:py-20">
-        <div className="md:col-span-5">
+        <div className="md:col-span-4">
           <p className="flex items-center gap-2.5 text-sm font-semibold uppercase tracking-[0.22em]">
             <span aria-hidden className="h-2 w-2 rounded-full bg-canvas" />
             {brand.name}
           </p>
           <p className="mt-6 max-w-sm text-sm leading-relaxed text-canvas/60">
-            A short collection of pieces for work and rest, built to order by workshops we visit in
+            A short shop of pieces for work and rest, built to order by workshops we visit in
             person.
           </p>
           <a
@@ -29,40 +30,38 @@ export function Footer() {
           </a>
         </div>
 
-        <div className="md:col-span-2">
-          <p className="eyebrow text-canvas/60">Explore</p>
+        <div className="md:col-span-3">
+          <p className="eyebrow text-canvas/60">Shop</p>
           <ul className="mt-5 space-y-3 text-sm">
-            {nav.map((item) => (
-              <li key={item.label}>
-                <Link href={item.href} className="text-canvas/75 transition-colors hover:text-canvas">
-                  {item.label}
+            <li>
+              <Link
+                href="/collection"
+                className="text-canvas/75 transition-colors hover:text-canvas"
+              >
+                Shop
+              </Link>
+            </li>
+            {categories.map((category) => (
+              <li key={category.slug}>
+                <Link
+                  href={`/collection/${category.slug}`}
+                  className="text-canvas/75 transition-colors hover:text-canvas"
+                >
+                  {category.label}
                 </Link>
               </li>
             ))}
-            <li>
-              <Link href="/collection" className="text-canvas/75 transition-colors hover:text-canvas">
-                All pieces
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/made-to-order"
-                className="text-canvas/75 transition-colors hover:text-canvas"
-              >
-                Made to order
-              </Link>
-            </li>
-            <li>
-              <Link href="/#approach" className="text-canvas/75 transition-colors hover:text-canvas">
-                Our approach
-              </Link>
-            </li>
           </ul>
         </div>
 
         <div className="md:col-span-2">
           <p className="eyebrow text-canvas/60">Contact</p>
           <ul className="mt-5 space-y-3 text-sm text-canvas/75">
+            <li>
+              <Link href="/contact" className="transition-colors hover:text-canvas">
+                Contact us
+              </Link>
+            </li>
             <li>
               <a
                 href={`mailto:${brand.email}`}
@@ -71,6 +70,19 @@ export function Footer() {
                 <MailIcon className="h-4 w-4 shrink-0 text-canvas/60" />
                 {brand.email}
               </a>
+            </li>
+            <li>
+              <Link
+                href="/made-to-order"
+                className="transition-colors hover:text-canvas"
+              >
+                Made to order
+              </Link>
+            </li>
+            <li>
+              <Link href="/#approach" className="transition-colors hover:text-canvas">
+                Our approach
+              </Link>
             </li>
           </ul>
         </div>
