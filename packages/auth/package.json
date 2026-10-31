@@ -1,0 +1,26 @@
+{
+  "name": "@decore/auth",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@decore/db": "workspace:*"
+  },
+  "peerDependencies": {
+    "next": "16.4.3",
+    "react": "19.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "next": "16.4.3",
+    "react": "19.3.0",
+    "typescript": "^5"
+  }
+}

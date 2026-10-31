@@ -8,10 +8,26 @@ and decor — three of them photographed, plus a cart and a checkout that record
 Products, orders and first-party traffic are all managed from `/admin`. Card payments are
 **not** wired to a gateway yet — see [Payments](#payments).
 
+## Repository layout
+
+The shop and the dashboard are two separate Next.js apps in one pnpm workspace.
+
+```
+apps/storefront   :3000   catalogue, product pages, cart, checkout, orders, tracking
+apps/admin        :3001   /admin, login, orders, traffic, uploads
+packages/db               Prisma client, schema, migrations, seed
+packages/auth             database sessions and password hashing
+packages/core             brand, site, money, checkout methods, catalogue types, uploads
+packages/ui               shared icons
+```
+
+They deploy independently and may share nothing but the database and, for now, the uploads
+folder. Every package ships TypeScript source; the apps compile it through
+`transpilePackages`.
+
 ## Run it
 
-The app talks to Postgres on `localhost:5432`, using the `decore` role and database.
-Homebrew's `postgresql@16` is already running on this machine; create the role and
+Postgres runs on `localhost:5432`, using the `decore` role and database. Create the role and
 database once if they are missing:
 
 ```bash
@@ -23,72 +39,108 @@ Then:
 
 ```bash
 pnpm install
-cp .env.example .env          # then edit
-pnpm prisma migrate deploy    # creates the tables
-pnpm db:seed                  # categories, fourteen pieces, the owner account
-pnpm dev                      # http://localhost:3000
+cp apps/storefront/.env.example apps/storefront/.env     # then edit
+cp apps/admin/.env.example apps/admin/.env               # then edit
+cp packages/db/.env.example packages/db/.env             # then edit
+pnpm db:migrate                                          # creates the tables
+pnpm db:seed                                             # categories, pieces, the owner
+pnpm dev                                                 # shop :3000, dashboard :3001
 ```
+
+`pnpm dev` starts both apps. To run one: `pnpm dev:site` or `pnpm dev:admin`.
+
+The dashboard's `REVALIDATE_SECRET` must match the storefront's, or a product save cannot
+expire the shop's cached catalogue. `UPLOAD_DIR` must point at the same folder in both apps;
+the examples use `../../data/uploads`, which is the repo's `data/uploads`.
 
 The seed reads `ADMIN_EMAIL` and `ADMIN_PASSWORD` and creates that owner, or resets the
 password if the account already exists. The checked-in example is `owner@example.com` /
 `change-me`; change both, then run `pnpm db:seed` again before the shop goes public.
-Sign in at `/admin`.
+Sign in at `http://localhost:3001/admin`.
 
 The seed is a starting point, not a sync: run it once, then edit pieces in the dashboard.
 Running it again restores the seeded copy of every piece it knows about, so avoid it on a
 live catalogue unless that is what you want.
 
 Prefer Docker? `docker compose up -d` publishes the same database on `localhost:5433`
-(coexisting with the Homebrew server), so point `DATABASE_URL` at `5433` and run the
-migrations and seed again. Change `docker-compose.yml` and `DATABASE_URL` together if you
-move it. Either way the credentials are `decore` / `decore`.
+(coexisting with the Homebrew server), so point `DATABASE_URL` at `5433` in all three env
+files and run the migrations and seed again. Change `docker-compose.yml` and
+`DATABASE_URL` together if you move it. Either way the credentials are `decore` / `decore`.
 
 ## Deploy
 
-`src/generated/prisma` is gitignored and produced by `postinstall` (`prisma generate`). Any
-host that runs a normal `pnpm install` gets it for free — but a build that skips install
-scripts will fail on `Can't resolve '@/generated/prisma/client'`.
+The two apps are deployed separately. Neither needs the other at build time.
 
-Set these in the host's environment:
+```bash
+pnpm install
+pnpm db:migrate                                  # against the production database, once
+pnpm --filter @decore/storefront build           # deploy apps/storefront
+pnpm --filter @decore/admin build                # deploy apps/admin, if you host it
+```
+
+`packages/db/src/generated/prisma` is gitignored and produced by `@decore/db`'s
+`postinstall` (`prisma generate`). A host that skips install scripts will fail on
+`Can't resolve '@decore/db'`; run `pnpm db:generate` in the build step instead.
+
+Storefront environment:
 
 | Variable | Needed for |
 | --- | --- |
-| `DATABASE_URL` | catalogue, dashboard, orders and receipts, at runtime only |
-| `SITE_URL` | canonicals, sitemap, structured data — must be the real public origin |
+| `DATABASE_URL` | catalogue, orders, receipts, tracking, at runtime only |
+| `SITE_URL` | canonicals, sitemap, structured data — the real public origin |
 | `WHATSAPP_NUMBER` | the order hand-off |
-| `ADMIN_EMAIL`, `ADMIN_PASSWORD` | the owner account created by `pnpm db:seed` |
+| `REVALIDATE_SECRET` | accepting the dashboard's cache ping |
+| `UPLOAD_DIR` | reading uploaded product images |
 
-The build compiles without any of them, but the shop cannot render a catalogue without a
-seeded database. Point `DATABASE_URL` at the production database, run
-`pnpm prisma migrate deploy` and `pnpm db:seed` once before the first real order.
+Dashboard environment:
+
+| Variable | Needed for |
+| --- | --- |
+| `DATABASE_URL` | catalogue, orders, traffic |
+| `STOREFRONT_URL` | the "View shop" link and the cache ping |
+| `REVALIDATE_SECRET` | same value as the storefront |
+| `UPLOAD_DIR` | writing uploaded product images |
+
+`ADMIN_EMAIL` and `ADMIN_PASSWORD` are only read by the seed, from `packages/db/.env`.
+
+The builds compile without any of them, but the shop cannot render a catalogue without a
+seeded database. Point `DATABASE_URL` at the production database and run
+`pnpm db:migrate` (then `pnpm db:seed` once, for the owner) before the first real order.
 
 **Image uploads.** Files are written to `data/uploads` (outside `public`, gitignored) and
-served by `/api/uploads/[name]` with a one-year cache header. That is correct for a machine
-or a server with a persistent disk, but not for a read-only host such as Vercel: a deploy
-starts with an empty disk. Swap `saveUpload` in `src/lib/uploads.ts` for object storage
-(Blob, S3 or R2) before deploying there — products store plain URLs, so nothing else needs
-to change. Unexpired images in the catalogue keep working only as long as their files exist.
+served by `/api/uploads/[name]` with a one-year cache header. That is correct for one server
+with a persistent disk. Two separate deployments need either a shared volume mounted at
+`UPLOAD_DIR` in both apps, or object storage: swap `saveUpload` in
+`packages/core/src/uploads.ts` for Blob, S3 or R2 before deploying to a read-only host such
+as Vercel. Products store plain URLs, so nothing else needs to change.
+
+**Catalogue cache.** The shop caches the catalogue under the `catalog` tag with
+`cacheLife("max")`. Because the dashboard is a different process, `updateTag` cannot reach
+it: after a save the dashboard calls `POST /api/revalidate` on the storefront with
+`REVALIDATE_SECRET`, and that route expires the tag. Without the shared secret the shop
+keeps serving the copy it has, so keep the two values in step.
 
 ## Things to replace before launch
 
 | What | Where |
 | --- | --- |
-| Brand name, tagline, email, WhatsApp display number | `src/lib/brand.ts` |
-| WhatsApp number that receives orders | `WHATSAPP_NUMBER` in `.env` |
-| Delivery fee, free-delivery threshold, advance % | `commerce` in `src/lib/brand.ts` |
+| Brand name, tagline, email, WhatsApp display number | `packages/core/src/brand.ts` |
+| WhatsApp number that receives orders | `WHATSAPP_NUMBER` in `apps/storefront/.env` |
+| Delivery fee, free-delivery threshold, advance % | `commerce` in `packages/core/src/brand.ts` |
 | The products themselves | `/admin/products` |
 | The owner login | `ADMIN_EMAIL` / `ADMIN_PASSWORD`, then `pnpm db:seed` |
 | Product photography | upload in the dashboard, or paste a URL |
-| Page measure, action appearance | `page-shell`, `btn-primary`, `btn-outline` in `src/app/globals.css` |
-| Public origin for canonicals, sitemap and structured data | `SITE_URL` in `.env` |
+| Page measure, action appearance | `page-shell`, `btn-primary`, `btn-outline` in `apps/storefront/src/app/globals.css` |
+| Public origin for canonicals, sitemap and structured data | `SITE_URL` in `apps/storefront/.env` |
 
-Postgres is the catalogue. `src/lib/catalog.ts` reads it through `"use cache"` with the
-`catalog` tag and `cacheLife("max")`; every dashboard save calls `updateTag("catalog")`, so
-the next storefront request waits for the fresh copy instead of serving the old one. New
-pieces are live without a rebuild — `generateStaticParams` still prerenders the pieces that
-existed at build time, and anything added later renders on demand.
+Postgres is the catalogue. `apps/storefront/src/lib/catalog.ts` reads it through `"use cache"`
+with the `catalog` tag and `cacheLife("max")`. Every dashboard save posts to the storefront's
+`/api/revalidate`, which expires the tag, so the next visit revalidates in the background
+instead of serving the old copy. New pieces are live without a rebuild — `generateStaticParams`
+still prerenders the pieces that existed at build time, and anything added later renders on
+demand.
 
-`prisma/seed-data.ts` is a snapshot of the catalogue as it was before the database took
+`packages/db/prisma/seed-data.ts` is a snapshot of the catalogue as it was before the database took
 over — the seed source, never imported by the app.
 
 Until a product has an image, it renders a drawn placeholder from `ProductImage`. That is
@@ -123,11 +175,15 @@ them before launch.
 
 Warm paper (`#f5f3ee`) and near-black ink, one deep pine accent and a clay tone for errors. Instrument
 Serif for display type, Instrument Sans for everything else. Tokens, type utilities, buttons and
-fields live in `src/app/globals.css`; there are no per-page colour overrides.
+fields live in `apps/storefront/src/app/globals.css`; there are no per-page colour overrides.
 
-The dashboard at `/admin` runs its own visual system: Geist and Geist Mono, a dark rail, cool
-neutrals and compact controls. Those styles are scoped under `.admin-shell` and the `.a-*` utilities
-in the same stylesheet, so none of it reaches the shop.
+The dashboard at `/admin` runs its own visual system in its own app: Geist and Geist Mono, a
+dark rail, cool neutrals and compact controls. Its stylesheet is
+`apps/admin/src/app/globals.css`, scoped under `.admin-shell` and the `.a-*` utilities. Nothing
+from it is shared with the shop, and the shop never loads Geist.
+
+Both apps use Tailwind 4 through `@tailwindcss/turbopack`; the theme tokens and the storefront's
+type utilities live in its own stylesheet, so the two systems no longer share a file.
 
 The interface keeps the catalogue photography low-resolution without hiding it: `ProductImage`
 accepts `framed`, which mats a piece inside a smaller centred frame instead of upscaling it across a
@@ -162,9 +218,9 @@ filter as you type and are keyboard-navigable: `↑` `↓` to move, `Enter` to o
 Focus is trapped while it is open and returned to the trigger on close, and the page behind is
 scroll-locked.
 
-The index is built on the server in `src/lib/search-index.ts` — fourteen compact records of name, line,
+The index is built on the server in `apps/storefront/src/lib/search-index.ts` — fourteen compact records of name, line,
 tagline, finishes, materials and rooms — and passed into the header, so the long product
-descriptions never reach the browser. Matching lives in `src/lib/search.ts`: accents and punctuation
+descriptions never reach the browser. Matching lives in `apps/storefront/src/lib/search.ts`: accents and punctuation
 are normalised, every word must match, and fields are weighted name > line > tagline >
 finishes/materials > room. Common synonyms score at half weight (`sofa` → chair, `wooden` → walnut,
 `lamp` → lighting), so literal matches still rank first. Rooms stay literal, which is why `desk`
@@ -181,7 +237,9 @@ the detail page, and the shop toolbar is the one place it becomes a filter.
 
 ## Dashboard
 
-`/admin` is part of the same Next app, server-rendered behind a login and marked `noindex`.
+`apps/admin` is its own Next app on `:3001`, server-rendered behind a login and marked
+`noindex`. It keeps the `/admin` prefix, so every existing link and bookmark still resolves;
+`/` redirects to `/admin`, and `robots.txt` disallows everything.
 
 - **Overview** — orders waiting on a reply, seven-day order count and value, visits and
   visitors, and how many pieces are live or drafted.
@@ -195,13 +253,14 @@ the detail page, and the shop toolbar is the one place it becomes a filter.
 
 Authentication is database sessions. `AdminUser` stores a scrypt hash; `AdminSession` stores
 a SHA-256 hash of a random token, never the token itself. The browser holds a 12-hour
-`HttpOnly`, `SameSite=Lax` cookie. `src/lib/auth.ts` is the only code that reads or writes a
+`HttpOnly`, `SameSite=Lax` cookie. `packages/auth/src/auth.ts` is the only code that reads or writes a
 session; every dashboard page and every admin action starts with `requireAdmin()`.
 
-Traffic is recorded by `AnalyticsBeacon`, a small client component mounted in the site layout
-that posts the path to `/api/track` on navigation. A random visitor id lives in
-`localStorage`, never a cookie; bots, `/admin` and `/api` are ignored. Rows land in
-`PageView`; nothing is shared with a third party.
+Traffic is recorded by `AnalyticsBeacon`, a small client component mounted in the storefront
+layout that posts the path to its own `/api/track` on navigation. A random visitor id lives in
+`localStorage`, never a cookie; bots, `/admin` and `/api` are ignored. Rows land in `PageView`
+and the dashboard reads the same table; nothing is shared with a third party, and the beacon
+never has to reach across apps.
 
 ## Orders
 
@@ -227,13 +286,13 @@ Receipts have no buyer login, so the reference is the only thing standing betwee
 and another's receipt. It comes from a cryptographic source for that reason. The dashboard
 login protects `/admin`; it does not gate the receipt route.
 
-Three checkout methods, all defined in `src/lib/checkout-methods.ts`:
+Three checkout methods, all defined in `packages/core/src/checkout-methods.ts`:
 
 - **Card** — records the order; the advance is collected once a gateway exists.
 - **Advance, then cash on delivery** — 30% to confirm the build, balance on delivery.
 - **Order on WhatsApp** — sends the selection to us.
 
-The advance split is computed in `src/lib/pricing.ts` and rounded to the nearest thousand,
+The advance split is computed in `apps/storefront/src/lib/pricing.ts` and rounded to the nearest thousand,
 because nobody wires Rs 85,500.
 
 The cart drawer shows that split before the buyer commits — subtotal, advance now, balance on
@@ -247,16 +306,16 @@ Stripe and Shopify Payments do not operate in Pakistan, so card checkout needs a
 gateway: Safepay, XPay, PayPro, NayaPay, or bank acquiring through Bank Alfalah / HBL.
 Onboarding needs an NTN, a registered business, and a local bank account.
 
-When an account exists, `src/lib/payments.ts` is the only file that needs to change. It
+When an account exists, `apps/storefront/src/lib/payments.ts` is the only file that needs to change. It
 returns a `redirectUrl`; if that is non-null the checkout form sends the buyer to the
 gateway instead of the confirmation page, and a webhook should flip `advancePaid` and
 `status`. Nothing else in the app assumes a provider.
 
 ## SEO and answer engines
 
-Absolute URLs come from one place — `src/lib/site.ts`, reading `SITE_URL`. It feeds
+Absolute URLs come from one place — `packages/core/src/site.ts`, reading `SITE_URL`. It feeds
 `metadataBase`, the canonicals, `sitemap.xml`, `robots.txt`, the Open Graph URLs and the structured
-data, so setting that variable in `.env` is what makes the whole set correct on the real host.
+data, so setting that variable in `apps/storefront/.env` is what makes the whole set correct on the real host.
 Unset it falls back to `http://localhost:3000` in development and `https://decore.pk` in production,
 so a forgotten variable cannot publish localhost canonicals.
 
@@ -267,11 +326,11 @@ fourteen pieces were checked in the served HTML.
 **Social cards.** `app/opengraph-image.tsx` and `app/product/[slug]/opengraph-image.tsx` render
 1200 × 630 PNGs with `next/og` — one store card and one per piece, carrying the name, tagline, price
 and lead time. Pages that define their own `openGraph` object include `siteOgImage` from
-`src/lib/seo.ts`, because a page-level object replaces the layout's image rather than merging into
+`apps/storefront/src/lib/seo.ts`, because a page-level object replaces the layout's image rather than merging into
 it.
 
-**Structured data.** All builders live in `src/lib/seo.ts` and render through
-`src/components/json-ld.tsx`, which escapes `<`:
+**Structured data.** All builders live in `apps/storefront/src/lib/seo.ts` and render through
+`apps/storefront/src/components/json-ld.tsx`, which escapes `<`:
 
 - `Organization` + `WebSite` on every page, with the WhatsApp number, email, opening hours,
   `areaServed: Pakistan` and stable `@id`s so the rest of the graph can point at them.
@@ -292,8 +351,8 @@ groups make the intent explicit and survive a future tightening of `*`.
 
 **Answer engines.** `/llms.txt` is the short index (positioning, key facts, page list, pieces,
 questions) and `/llms-full.txt` carries the whole catalogue with specs, finishes, dimensions and
-process answers. Both are generated from the database through `src/lib/catalog.ts` and
-`src/lib/seo.ts`, so a price or lead time cannot be quoted out of date. Both routes return
+process answers. Both are generated from the database through `apps/storefront/src/lib/catalog.ts` and
+`apps/storefront/src/lib/seo.ts`, so a price or lead time cannot be quoted out of date. Both routes return
 `text/plain` and are listed in the README rather than linked in the footer.
 
 **What is deliberately absent.** There is no `aggregateRating`, because nothing has been rated; no
@@ -314,16 +373,24 @@ merchant-listing visibility. Both are business inputs, not code gaps.
 
 ## Verified
 
-- `pnpm typecheck`, `pnpm build` and `pnpm lint` pass.
-- All routes return 200; product pages render their content in the initial HTML with no
-  skeleton, and `/order/[reference]` blocks until the receipt is ready instead of streaming a
-  placeholder.
+- `pnpm typecheck`, `pnpm lint` and both app builds (`--filter @decore/storefront`,
+  `--filter @decore/admin`) pass.
+- Both apps run side by side: the shop on `:3000`, the dashboard on `:3001`. Every storefront
+  route returns 200, `/admin` on the dashboard redirects to `/admin/login` when signed out, and
+  the overview, products, orders and traffic pages render after signing in. Admin links to the
+  shop point at `STOREFRONT_URL` instead of the dashboard itself.
+- Product pages still render their content in the initial HTML with no skeleton, and
+  `/order/[reference]` blocks until the receipt is ready instead of streaming a placeholder.
 - The dashboard was exercised end to end: sign in and out, overview counts, product list,
-  create/edit/delete, publish toggle, image upload, order status and advance toggle, and the
-  traffic page. A published test piece appeared on the storefront and its page returned 200
-  with its uploaded image; both the piece and the file were then removed.
-- Catalogue writes are visible on the next storefront request (the `catalog` tag is expired by
-  `updateTag`), and drafts never appear on the shop.
+  create/edit/delete, publish toggle, order status and advance toggle, and the traffic page. A
+  published test piece appeared on the storefront and its page returned 200 with its uploaded
+  image; both the piece and the file were then removed.
+- Catalogue writes cross the app boundary: saving a tagline in the dashboard produced
+  `POST /api/revalidate 200` in the storefront's log, the next storefront request served the old
+  copy while it revalidated, and the one after that served the new tagline. An unsigned or
+  wrong-secret call returns 401.
+- Uploads cross it too: a file written through the admin's `saveUpload` landed in the shared
+  `UPLOAD_DIR`, and the storefront served it from `/api/uploads/[name]` as `image/png`.
 - Page views recorded by the beacon appear in `/admin/analytics` with path, device and referrer.
 - Two real orders were placed through the API and read back from Postgres with correct
   totals, advance, and balance.
