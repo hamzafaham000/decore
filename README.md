@@ -123,8 +123,8 @@ from the code:
 
 Leave the build and install commands at their defaults. Vercel installs the whole workspace
 from the root lockfile and runs `next build` in the app folder, so `packages/*` resolve through
-`transpilePackages` without extra configuration. (Deploying from the CLI with `vercel
-apps/storefront` sets the same thing for the CLI deploy.)
+`transpilePackages` without extra configuration. A CLI deploy from `apps/storefront` links that
+folder as the project root, which has the same effect.
 
 **The build needs the database.** `generateStaticParams` reads the catalogue, so the shop
 prerenders every piece at build time and fails with *"Failed to collect page data for
@@ -134,7 +134,7 @@ build:
 
 ```bash
 DATABASE_URL="postgresql://…" pnpm db:migrate
-DATABASE_URL="postgresql://…" pnpm db:seed      # once, once more for admin credentials
+DATABASE_URL="postgresql://…" pnpm db:seed      # once: categories, pieces, the owner
 ```
 
 **Environment.** Set the storefront's variables from the table above in the project's
