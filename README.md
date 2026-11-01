@@ -182,6 +182,10 @@ dark rail, cool neutrals and compact controls. Its stylesheet is
 `apps/admin/src/app/globals.css`, scoped under `.admin-shell` and the `.a-*` utilities. Nothing
 from it is shared with the shop, and the shop never loads Geist.
 
+Geist is self-hosted — the two latin variable cuts sit in `apps/admin/src/app/fonts` and load
+through `next/font/local`, so the dashboard's build does not call Google Fonts. (The storefront's
+Instrument faces still come from `next/font/google` at build time.)
+
 Both apps use Tailwind 4 through `@tailwindcss/turbopack`; the theme tokens and the storefront's
 type utilities live in its own stylesheet, so the two systems no longer share a file.
 
@@ -375,6 +379,8 @@ merchant-listing visibility. Both are business inputs, not code gaps.
 
 - `pnpm typecheck`, `pnpm lint` and both app builds (`--filter @decore/storefront`,
   `--filter @decore/admin`) pass.
+- The dashboard renders in Geist and Geist Mono from the bundled files, with no Google Fonts
+  request and no `next/font` warnings in dev or in the build log.
 - Both apps run side by side: the shop on `:3000`, the dashboard on `:3001`. Every storefront
   route returns 200, `/admin` on the dashboard redirects to `/admin/login` when signed out, and
   the overview, products, orders and traffic pages render after signing in. Admin links to the

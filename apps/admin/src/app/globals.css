@@ -49,10 +49,10 @@
   --a-warn-soft: #fbf3e1;
   --a-danger: #a03d2c;
   --a-danger-soft: #fbedea;
-  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+  --font-mono: var(--font-geist-mono);
   background-color: var(--a-bg);
   color: var(--a-ink);
-  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-geist-sans);
   font-size: 0.875rem;
   font-feature-settings: normal;
   letter-spacing: normal;
@@ -61,7 +61,7 @@
 .admin-shell h1,
 .admin-shell h2,
 .admin-shell h3 {
-  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-geist-sans);
   font-weight: 600;
   letter-spacing: -0.02em;
 }
