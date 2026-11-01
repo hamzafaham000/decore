@@ -16,8 +16,14 @@ import path from "node:path";
  */
 const configured = process.env.UPLOAD_DIR;
 
+/**
+ * `turbopackIgnore` keeps the bundler from tracing the whole project: the
+ * folder is read at runtime, and without this the build treats `process.cwd()`
+ * as an input, pulling every source file into the server output. That bloats
+ * the deploy and can hit size limits on hosts like Vercel.
+ */
 export const uploadDir = configured
-  ? path.resolve(process.cwd(), configured)
+  ? path.resolve(/* turbopackIgnore: true */ process.cwd(), configured)
   : path.join(process.cwd(), "data", "uploads");
 
 export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
@@ -51,7 +57,7 @@ export async function saveUpload(file: File, extension: string) {
 
   const name = `${randomUUID()}.${extension}`;
   const bytes = new Uint8Array(await file.arrayBuffer());
-  await writeFile(path.join(uploadDir, name), bytes);
+  await writeFile(path.join(/* turbopackIgnore: true */ uploadDir, name), bytes);
 
   return name;
 }

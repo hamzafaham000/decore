@@ -107,6 +107,47 @@ The builds compile without any of them, but the shop cannot render a catalogue w
 seeded database. Point `DATABASE_URL` at the production database and run
 `pnpm db:migrate` (then `pnpm db:seed` once, for the owner) before the first real order.
 
+### Vercel
+
+One Vercel project per app, both from this repository. The important setting is **Root
+Directory**: set it to `apps/storefront` for the shop and `apps/admin` for the dashboard.
+
+Vercel otherwise reads the repository root, where the `package.json` is a workspace manifest
+with no `next` dependency, and the build fails immediately with *"No Next.js version detected.
+Make sure your package.json has next in either dependencies or devDependencies."* The root
+directory is a project setting, not something `vercel.json` can carry, so it cannot be fixed
+from the code:
+
+1. Project → **Settings** → **Build and Deployment** → **Root Directory** → `apps/storefront`.
+2. Save, then **Deployments** → **Redeploy**.
+
+Leave the build and install commands at their defaults. Vercel installs the whole workspace
+from the root lockfile and runs `next build` in the app folder, so `packages/*` resolve through
+`transpilePackages` without extra configuration. (Deploying from the CLI with `vercel
+apps/storefront` sets the same thing for the CLI deploy.)
+
+**The build needs the database.** `generateStaticParams` reads the catalogue, so the shop
+prerenders every piece at build time and fails with *"Failed to collect page data for
+/product/[slug]"* if `DATABASE_URL` is unreachable or the tables are empty. Point it at the
+hosted database and run the migration and seed against that database **before** the first
+build:
+
+```bash
+DATABASE_URL="postgresql://…" pnpm db:migrate
+DATABASE_URL="postgresql://…" pnpm db:seed      # once, once more for admin credentials
+```
+
+**Environment.** Set the storefront's variables from the table above in the project's
+Environment Variables, at least `DATABASE_URL`, `SITE_URL`, `WHATSAPP_NUMBER` and
+`REVALIDATE_SECRET`. The same `REVALIDATE_SECRET` goes in the dashboard's project, along with
+`DATABASE_URL` and `STOREFRONT_URL` pointing at the deployed shop origin.
+
+**Uploads do not work on Vercel as written.** Serverless filesystems are read-only apart from
+`/tmp`, and `/tmp` is per-instance and ephemeral, so a file the dashboard writes is neither
+persisted nor visible to the shop. Uploads need object storage (Vercel Blob, S3, R2) before the
+dashboard runs there — see the note below. The shop does not need `UPLOAD_DIR` on Vercel if
+every image is either in `public/` or a full URL.
+
 **Image uploads.** Files are written to `data/uploads` (outside `public`, gitignored) and
 served by `/api/uploads/[name]` with a one-year cache header. That is correct for one server
 with a persistent disk. Two separate deployments need either a shared volume mounted at
